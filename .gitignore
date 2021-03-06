@@ -1,0 +1,18 @@
+# History files
+.Rhistory
+.Rapp.history
+.DS_Store
+.history
+.Rprofile
+
+# RStudio files
+.Rproj.user/
+*.Rproj
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# personal files
+update_notes

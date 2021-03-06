@@ -1,0 +1,65 @@
+baseURL: https://example.com
+languageCode: en
+DefaultContentLanguage: en
+title: Website of Sam Passmore
+theme: anatole
+summarylength: 10
+enableEmoji: yes
+enableRobotsTXT: yes
+pygmentsUseClasses: yes
+pygmentsCodeFences: yes
+pygmentsCodefencesGuessSyntax: yes
+params:
+  author: Sam Passmore
+  customCss: [css/custom.css, css/styles.css]
+  customJs: []
+  description: Call me Sam
+  doNotLoadAnimations: no
+  favicon: favicons/
+  images: images/site-feature-image.png
+  keywords: ''
+  mainSections: []
+  math:
+    enable: no
+    use: katex
+  profilePicture: images/profile.jpg
+  simpleAnalytics: {}
+  socialIcons:
+    - icon: fab fa-twitter
+      title: Twitter
+      url: https://twitter.com/SamPassmore_
+    - icon: ai ai-google-scholar-square
+      title: Google Scholar
+      url: https://scholar.google.co.uk/citations?user=zrjq62QAAAAJ&hl=en
+    - icon: fab fa-github
+      title: GitHub
+      url: https://github.com/SamPassmore
+    - icon: fas fa-envelope
+      title: e-mail
+      url: mailto:passmore.sam@gmail.com
+  title: I'm Dr Sam Passmore
+menu:
+  main:
+    - identifier: home
+      name: Home
+      url: /
+      weight: 100
+    - identifier: posts
+      name: Posts
+      url: /post/
+      weight: 200
+    # - identifier: about
+    #   name: About
+    #   url: /about/
+    #   weight: 300
+    - identifier: publications
+      name: Publications
+      url: /publications/
+      weight: 400
+    - identifier: contact
+      name: Contact
+      url: /contact/
+      weight: 500
+taxonomies:
+  series: series
+
