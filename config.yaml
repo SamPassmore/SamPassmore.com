@@ -56,10 +56,10 @@ menu:
       name: Publications
       url: /publications/
       weight: 400
-    # - identifier: contact
-    #   name: Contact
-    #   url: /contact/
-    #   weight: 500
+    - identifier: teaching
+      name: Teaching
+      url: /teaching/
+      weight: 500
 taxonomies:
   series: series
 
