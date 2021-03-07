@@ -1,5 +1,5 @@
 ---
-author: Hugo Authors
+author: Sam Passmore
 ---
 
 Hi! I’m Sam Passmore  :smile:

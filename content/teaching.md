@@ -1,6 +1,5 @@
 ---
 author: Sam Passmore
-contact: false
 date: "2021-07-03"
 description: Teaching experience
 title: Teaching
