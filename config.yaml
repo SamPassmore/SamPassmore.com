@@ -23,6 +23,7 @@ params:
     enable: no
     use: katex
   profilePicture: images/profile.jpg
+  googleAnalytics: "UA-80196546-1"
   simpleAnalytics: {}
   socialIcons:
     - icon: fab fa-twitter
