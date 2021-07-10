@@ -5,6 +5,8 @@ description: Publication page
 title: Publications
 ---
 
+__Passmore, S.__, Barth, W., Quinn, K., Greenhill, S. J., Evans, N., & Jordan, F. M. (2021). Kin Against Kin: Internal Co-selection and the Coherence of Kinship Typologies. Biological Theory. https://doi.org/10.1007/s13752-021-00379-6
+
 __Passmore, S.__, & Jordan, F. M. (2020). No universals in the cultural evolution of kinship terminology. Evolutionary Human Sciences, 2. https://doi.org/10.1017/ehs.2020.41
 
 Watts, J., __Passmore, S.__, Jackson, J. C., Rzymski, C., & Dunbar, R. I. M. (2020). Text analysis shows conceptual overlap as well as domain-specific differences in Christian and secular worldviews. Cognition, 201, 104290. https://doi.org/10.1016/j.cognition.2020.104290
