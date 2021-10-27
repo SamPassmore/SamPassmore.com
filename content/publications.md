@@ -5,6 +5,10 @@ description: Publication page
 title: Publications
 ---
 
+__Passmore, S.__, & Watts, J. WEIRD People and The Western Church: who made who? https://doi.org/10.31234/osf.io/p5wt4 (Pre-Print)
+
+Wood, A., Kirby, K. R., Ember, C., Silbert, S., __Passmore, S.__, Daikoku, H., … Savage, P. E. The Global Jukebox: A public database of performing arts and culture. https://doi.org/10.31234/osf.io/4z97j (Pre-Print)
+
 __Passmore, S.__, Barth, W., Quinn, K., Greenhill, S. J., Evans, N., & Jordan, F. M. (2021). Kin Against Kin: Internal Co-selection and the Coherence of Kinship Typologies. Biological Theory. https://doi.org/10.1007/s13752-021-00379-6
 
 __Passmore, S.__, & Jordan, F. M. (2020). No universals in the cultural evolution of kinship terminology. Evolutionary Human Sciences, 2. https://doi.org/10.1017/ehs.2020.41

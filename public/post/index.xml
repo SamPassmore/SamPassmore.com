@@ -2,35 +2,44 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Posts on Website of Sam Passmore</title>
-    <link>https://example.com/post/</link>
+    <link>https://www.sampassmore.com/post/</link>
     <description>Recent content in Posts on Website of Sam Passmore</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Sat, 06 Jun 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://example.com/post/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 06 Mar 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://www.sampassmore.com/post/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>The problem with Galton&#39;s problem</title>
+      <link>https://www.sampassmore.com/post/galtons-problem/</link>
+      <pubDate>Fri, 06 Mar 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.sampassmore.com/post/galtons-problem/</guid>
+      <description>The Problem with Galton&amp;rsquo;s Problem We need to talk about &amp;ldquo;Galton&amp;rsquo;s Problem&amp;rdquo;.</description>
+    </item>
+    
     <item>
       <title>bayestraitr</title>
-      <link>https://example.com/post/2021-03-06-bayestraitr/</link>
-      <pubDate>Sat, 06 Jun 2020 00:00:00 +0000</pubDate>
+      <link>https://www.sampassmore.com/post/bayestraitr/</link>
+      <pubDate>Thu, 06 Jun 2019 00:00:00 +0000</pubDate>
       
-      <guid>https://example.com/post/2021-03-06-bayestraitr/</guid>
+      <guid>https://www.sampassmore.com/post/bayestraitr/</guid>
       <description>I’ve been using BayesTraits for the last year or so, and had developed a package to make it easy to create data for BayesTraits and to read the output into R - called bayestraitr.</description>
     </item>
     
     <item>
       <title>Cultured Scene</title>
-      <link>https://example.com/post/cultured-scene/</link>
+      <link>https://www.sampassmore.com/post/cultured-scene/</link>
       <pubDate>Tue, 04 Dec 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://example.com/post/cultured-scene/</guid>
+      <guid>https://www.sampassmore.com/post/cultured-scene/</guid>
       <description>I wrote a piece for the December issue of Cultured Scene!</description>
     </item>
     
     <item>
       <title>Sookias, Passmore, and Atkinson (2018) - News coverage</title>
-      <link>https://example.com/post/deep-ancestry-news/</link>
+      <link>https://www.sampassmore.com/post/deep-ancestry-news/</link>
       <pubDate>Wed, 11 Apr 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://example.com/post/deep-ancestry-news/</guid>
+      <guid>https://www.sampassmore.com/post/deep-ancestry-news/</guid>
       <description>A paper I published with Roland Sookias and Quentin Atkinson was covered in the news!</description>
     </item>
     
