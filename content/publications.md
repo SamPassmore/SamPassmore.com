@@ -5,7 +5,10 @@ description: Publication page
 title: Publications
 ---
 
-__Passmore, S.__, & Watts, J. WEIRD People and The Western Church: who made who? https://doi.org/10.31234/osf.io/p5wt4 (Pre-Print)
+Savage, P. E., __Passmore, S.__, Chiba, G., Currie, T. E., Suzuki, H., & Atkinson, Q. D. (2022). Sequence alignment of folk song melodies reveals cross-cultural regularities of musical evolution. Current Biology. https://doi.org/10.1016/j.cub.2022.01.039
+[__[New Scientist](https://www.newscientist.com/article/2307192-japanese-and-english-language-folk-songs-evolved-in-the-same-way/)__]
+
+__Passmore, S.__, & Watts, J. (2022). WEIRD people and the Western Church: Who made whom? Religion, Brain & Behavior. (world). Retrieved from https://www.tandfonline.com/doi/abs/10.1080/2153599X.2021.1991459
 
 Wood, A., Kirby, K. R., Ember, C., Silbert, S., __Passmore, S.__, Daikoku, H., … Savage, P. E. The Global Jukebox: A public database of performing arts and culture. https://doi.org/10.31234/osf.io/4z97j (Pre-Print)
 
