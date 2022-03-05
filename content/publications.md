@@ -7,7 +7,7 @@ title: Publications
 
 Savage, P. E., __Passmore, S.__, Chiba, G., Currie, T. E., Suzuki, H., & Atkinson, Q. D. (2022). Sequence alignment of folk song melodies reveals cross-cultural regularities of musical evolution. Current Biology. https://doi.org/10.1016/j.cub.2022.01.039
 
-[__[New Scientist](https://www.newscientist.com/article/2307192-japanese-and-english-language-folk-songs-evolved-in-the-same-way/)__]
+[__[New Scientist](https://www.newscientist.com/article/2307192-japanese-and-english-language-folk-songs-evolved-in-the-same-way/)__] [__Podcast__](https://www.scientificamerican.com/podcast/episode/researchers-analyzed-folk-music-like-it-was-mutating-dna-they-found-amazing-parallels-between-life-and-art/?utm_medium=Social&utm_source=Twitter#Echobox=1646326097)
 
 __Passmore, S.__, & Watts, J. (2022). WEIRD people and the Western Church: Who made whom? Religion, Brain & Behavior. (world). Retrieved from https://www.tandfonline.com/doi/abs/10.1080/2153599X.2021.1991459
 
