@@ -37,8 +37,8 @@ params:
       url: https://github.com/SamPassmore
     - icon: fas fa-envelope
       title: e-mail
-      url: mailto:passmore@sfc.keio.ac.jp
-  title: I'm Dr Sam Passmore
+      url: mailto:samuel.passmore@anu.edu.au
+  title: Dr Sam Passmore
 menu:
   main:
     - identifier: home
