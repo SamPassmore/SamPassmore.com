@@ -1,0 +1,52 @@
+---
+title: Phylogenetic Signal in INLA
+author: R package build
+date: '2022-07-15'
+slug: []
+categories: []
+tags: []
+Description: ''
+Tags: []
+Categories: []
+DisableComments: no
+---
+
+
+
+<div id="phylogenetic-signal-in-inla" class="section level1">
+<h1>Phylogenetic signal in INLA</h1>
+<p>Recently, my research has been focused on quantifying the importance of
+processes that might drive the patterns of similarity we observe within a particular variable - the autocorrelation.</p>
+<p>For the most part, I have been using <a href="https://www.youtube.com/watch?v=PIuqxOBJqLU">Gaussian Process models</a>, and relying heavily on the excellent example provided by Paul Bürkner which shows how to <a href="https://cran.r-project.org/web/packages/brms/vignettes/brms_phylogenetics.html">estimate phylogenetic signal in BRMS</a>.</p>
+<p>For various reasons, I shifted to using a different software package, <a href="https://www.r-inla.org/">INLA</a>, and to ensure I understand the dynamics of this new system, I replicated Paul Bürkner’s example in INLA with the advice and guidance of Russell Dinnage.</p>
+<p>To remind us of the premise I copy the introduction below:</p>
+<blockquote>
+<h2 id="introduction">Introduction</h2>
+</blockquote>
+<blockquote>
+<p>In the present vignette, we want to discuss how to specify phylogenetic multilevel models using brms. These models are relevant in evolutionary biology when data of many species are analyzed at the same time. The usual approach would be to model species as a grouping factor in a multilevel model and estimate varying intercepts (and possibly also varying slopes) over species. However, species are not independent as they come from the same phylogenetic tree and we thus have to adjust our model to incorporate this dependency. The examples discussed here are from chapter 11 of the book Modern Phylogenetic Comparative Methods and the application in Evolutionary Biology (de Villemeruil &amp; Nakagawa, 2014). The necessary data can be downloaded from the corresponding website (<a href="https://www.mpcm-evolution.com/" class="uri">https://www.mpcm-evolution.com/</a>). Some of these models may take a few minutes to fit.</p>
+</blockquote>
+<blockquote>
+<h3 id="a-simple-phylogenetic-model">A Simple Phylogenetic Model</h3>
+</blockquote>
+<blockquote>
+<p>Assume we have measurements of a phenotype, phen (say the body size), and a cofactor variable (say the temperature of the environment). We prepare the data using the following code.</p>
+</blockquote>
+<p>We are going to use the same data as Paul, so we can compare outcomes:</p>
+<pre class="r"><code>library(INLA)</code></pre>
+<pre><code>## Loading required package: Matrix</code></pre>
+<pre><code>## Loading required package: foreach</code></pre>
+<pre><code>## Loading required package: parallel</code></pre>
+<pre><code>## Loading required package: sp</code></pre>
+<pre><code>## This is INLA_22.05.07 built 2022-05-07 09:58:26 UTC.
+##  - See www.r-inla.org/contact-us for how to get help.
+##  - To enable PARDISO sparse library; see inla.pardiso()</code></pre>
+<pre class="r"><code>library(ape)
+
+phylo &lt;- ape::read.nexus(&quot;https://paul-buerkner.github.io/data/phylo.nex&quot;)
+data_simple &lt;- read.table(
+  &quot;https://paul-buerkner.github.io/data/data_simple.txt&quot;,
+  header = TRUE
+)</code></pre>
+<p>To model the relationships between societies, BRMS requires a covariance matrix, but INLA uses precision matrices. So instead of calculating the</p>
+</div>
