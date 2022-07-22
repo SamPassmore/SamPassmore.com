@@ -1,6 +1,6 @@
 ---
-title: Phylogenetic Signal in INLA
-author: R package build
+title: "Phylogenetic Signal in INLA"
+author: "R package build"
 date: '2022-07-15'
 slug: []
 categories: []
@@ -34,6 +34,7 @@ We are going to use the same data as Paul, so we can compare outcomes:
 ```{r}
 library(INLA)
 library(ape)
+library(ggplot2)
 
 phylo <- ape::read.nexus("https://paul-buerkner.github.io/data/phylo.nex")
 data_simple <- read.table(
@@ -63,10 +64,69 @@ Finally, we build the model using some defauly INLA settings.
 ```{r}
 model_simple = inla(phen ~ cofactor +
                     f(phylo_id,
-                      model = "generic2",
+                      model = "generic0",
                       Cmatrix = phylo_prec_mat),
                   data = data_simple,
-                  control.family = list(hyper = list(prec = list(initial = log(1e+08), fixed = TRUE))))
+                  control.compute=list(config = TRUE))
 ```
 
-INLA and BRMS have similar model construction. Both approaches use the standard model formula `y ~ x`, which is how the response and fixed co-factor effect are modelled. INLA and BRMS differ in how they represent fixed effects. In BRMS the random effect is shown like so: `(1|gr(phylo, cov = A)`. The `1|` indicates varying intercepts, followed by the grouping function `gr` which acts as tool to insert and align the covariance matrix with the random effect: `cov = A`. INLA contains a similar model set-up tool called `f` for function. The `f` function is much more versatile than the `gr` function in `brms`, and is used to model a wide range of possible Gaussian models. As such, it contains more arguments. The second argument within `f` is `model`, which has 50 possibilities (see `names(inla.models()$latent)` for all models). We use the [`generic2` model](https://inla.r-inla-download.org/r-inla.org/doc/latent/generic2.pdf). The `generic2` model is useful for our goal of estimating phylogenetic signal, as it calculates the proportion of variance explained by phylogeny automatically. 
+INLA and BRMS have similar model construction. Both approaches use the standard model formula `y ~ x`, which is how the response and fixed co-factor effect are represented. INLA and BRMS differ in how they represent random effects. In BRMS the random effect is shown like so: `(1|gr(phylo, cov = A)`. The `1|` indicates varying intercepts, followed by the grouping function `gr` which acts as tool to insert and align the observations `phylo` with the covariance matrix `cov = A`. INLA contains a similar random effect set-up tool called `f` for function. `f` models random intercepts if only one categorical variable is given, and random slopes if a second continuous co-variate is given. `f`  is more versatile than the `gr` function in `brms`, and is used to model a wide range of possible Gaussian models, and therefore more arguments. The second argument within `f` is `model`, which has 50 possibilities and defines how the precision estimates are calculated (see `names(inla.models()$latent)` for all models). We use the [`generic0` model](https://inla.r-inla-download.org/r-inla.org/doc/latent/generic0.pdf), which I explain in more detail below. The final argument is `Cmatrix` which contains our phylogenetic precision matrix. 
+
+First we show the INLA output
+
+```{r}
+summary(model_simple)
+```
+
+Followed by the BRMS output:
+
+```
+ Family: gaussian 
+  Links: mu = identity; sigma = identity 
+Formula: phen ~ cofactor + (1 | gr(phylo, cov = A)) 
+   Data: data_simple (Number of observations: 200) 
+  Draws: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;
+         total post-warmup draws = 4000
+
+Group-Level Effects: 
+~phylo (Number of levels: 200) 
+              Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+sd(Intercept)    14.57      2.14    10.45    18.90 1.00      873     1347
+
+Population-Level Effects: 
+          Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+Intercept    38.16      7.04    24.55    51.82 1.00     2286     2438
+cofactor      5.18      0.14     4.91     5.45 1.00     6730     3471
+
+Family Specific Parameters: 
+      Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+sigma     9.19      0.72     7.85    10.68 1.00     1107     1898
+
+Draws were sampled using sampling(NUTS). For each parameter, Bulk_ESS
+and Tail_ESS are effective sample size measures, and Rhat is the potential
+scale reduction factor on split chains (at convergence, Rhat = 1).
+```
+
+INLA prints two main areas of output we are interested in: `Fixed effects` (titled `Populations-Level Effects` in BRMS output) and `Model hyperparameters` (`Group-Level Effects`). Both INLA and BRMS estimate fixed effects in similar ways, and the results are comparable between these two approaches. 
+
+The hyperparameters for random effects in INLA are precision estimates, as opposed to variance estimates in BRMS. So, they are not directly comparable. Fortunately, precision estimates are easily converted to the more intuitive variance estimates using the formula $\sqrt(1 / \tau)$. After this conversion, we see that INLA estimates a slightly smaller phylogenetic effect than BRMS does. 
+
+```{r}
+round(sqrt(1/model_simple$summary.hyperpar), 2)
+```
+The most intuitive aspect of the BRMS example is presenting the posterior distribution of phylogenetic signal. To produce the same plot from the INLA model, we can use the following code:
+
+```{r}
+posterior = inla.hyperpar.sample(n = 1000, model_simple)
+lambda_estimates = data.frame(1 / posterior / rowSums(1 / posterior))
+
+ggplot(lambda_estimates, aes(x = Precision.for.phylo_id)) + 
+  geom_density(fill = "#6591b8") + 
+  xlim(c(0.3, 0.9)) + # same limits as BRMS example
+  ylab(element_blank()) + 
+  theme_classic() + 
+  theme(axis.text.y = element_blank(),
+        axis.ticks = element_blank())
+```
+
+The INLA model performs quite well using default priors, with similar estimates, but slightly higher error. One of the more attractive aspects of INLA is the introduction of [penalizing complexity priors](https://becarioprecario.bitbucket.io/inla-gitbook/ch-priors.html#sec:pcpriors). The basic idea behind penalizing complexity priors is that we should prefer a simpler model, until there is enough support for a more complex model.
