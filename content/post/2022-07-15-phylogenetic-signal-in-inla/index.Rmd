@@ -132,3 +132,83 @@ ggplot(lambda_estimates, aes(x = Precision.for.phylo_id)) +
 ```
 
 The INLA model performs quite well using default priors, with similar estimates, but slightly higher error. One of the more attractive aspects of INLA is the introduction of [penalizing complexity priors](https://becarioprecario.bitbucket.io/inla-gitbook/ch-priors.html#sec:pcpriors). The basic idea behind penalizing complexity priors is that we should prefer a simpler model, until there is enough support for a more complex model.
+
+```{r}
+pcprior = list(prec = list(
+  prior="pc.prec",
+  param = c(20, 0.1)) 
+)
+
+model_simple = inla(phen ~ cofactor +
+                    f(phylo_id,
+                      model = "generic0",
+                      Cmatrix = phylo_prec_mat,
+                      hyper = pcprior),
+                  data = data_simple,
+                  control.compute=list(config = TRUE))
+
+
+```
+
+```{r echo=FALSE}
+posterior = inla.hyperpar.sample(n = 1000, model_simple)
+lambda_estimates = data.frame(1 / posterior / rowSums(1 / posterior))
+
+ggplot(lambda_estimates, aes(x = Precision.for.phylo_id)) + 
+  geom_density(fill = "#6591b8") + 
+  xlim(c(0.3, 0.9)) + # same limits as BRMS example
+  ylab(element_blank()) + 
+  theme_classic() + 
+  theme(axis.text.y = element_blank(),
+        axis.ticks = element_blank())
+```
+
+
+## A Phylogenetic model with Repeated Measurements 
+
+> Often, we have multiple observations per species and this allows to fit more complicated phylogenetic models.
+
+```{r}
+data_repeat <- read.table(
+  "https://paul-buerkner.github.io/data/data_repeat.txt",
+  header = TRUE
+)
+data_repeat$spec_mean_cf <-
+  with(data_repeat, sapply(split(cofactor, phylo), mean)[phylo])
+head(data_repeat)
+
+# recreate phylo id variable
+data_repeat$phylo_id_rep <- match(data_repeat$phylo, rownames(phylo_prec_mat))
+data_repeat$specied_id = phylo_id_rep
+```
+> The variable spec_mean_cf just contains the mean of the cofactor for each species. The code for the repeated measurement phylogenetic model looks as follows:
+
+```{r}
+model_repeat1 = inla(
+  phen ~ spec_mean_cf + 
+    f(phylo_id_rep,
+      model = "generic0",
+      Cmatrix = phylo_prec_mat,
+      hyper = pcprior) +
+    f(species,
+      model = "iid"),
+  data = data_repeat,
+  control.compute=list(config = TRUE)
+)
+
+
+```
+
+```{r}
+posterior = inla.hyperpar.sample(n = 1000, model_repeat1)
+lambda_estimates = data.frame(1 / posterior / rowSums(1 / posterior))
+
+ggplot(lambda_estimates, aes(x = Precision.for.phylo_id_rep)) + 
+  geom_density(fill = "#6591b8") + 
+  xlim(c(0.3, 0.9)) + # same limits as BRMS example
+  ylab(element_blank()) + 
+  theme_classic() + 
+  theme(axis.text.y = element_blank(),
+        axis.ticks = element_blank())
+```
+
