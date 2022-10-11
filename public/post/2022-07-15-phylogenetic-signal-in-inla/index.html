@@ -71,12 +71,12 @@
 <meta name="twitter:image" content="https://www.sampassmore.com/105"/>
 
 <meta name="twitter:title" content="Phylogenetic Signal in INLA"/>
-<meta name="twitter:description" content=""/>
+<meta name="twitter:description" content="Phylogenetic signal in INLA Recently, my research has been focused on quantifying the importance of processes that might drive the patterns of similarity we observe within a particular variable - the autocorrelation."/>
 
 
     
     <meta property="og:title" content="Phylogenetic Signal in INLA" />
-<meta property="og:description" content="" />
+<meta property="og:description" content="Phylogenetic signal in INLA Recently, my research has been focused on quantifying the importance of processes that might drive the patterns of similarity we observe within a particular variable - the autocorrelation." />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://www.sampassmore.com/post/2022-07-15-phylogenetic-signal-in-inla/" /><meta property="og:image" content="https://www.sampassmore.com/105"/><meta property="article:section" content="post" />
 <meta property="article:published_time" content="2022-07-15T00:00:00+00:00" />
@@ -177,12 +177,109 @@
                         <span class="date"> Fri, Jul 15, 2022 
                                            </span>
                         <em class="fas fa-stopwatch"></em>
-                        <span class="reading-time">0-minute read</span>
+                        <span class="reading-time">5-minute read</span>
                     </div>
                 
             </div>
 
-            </div>
+            
+
+
+<div id="phylogenetic-signal-in-inla" class="section level1">
+<h1>Phylogenetic signal in INLA</h1>
+<p>Recently, my research has been focused on quantifying the importance of processes that might drive the patterns of similarity we observe within a particular variable - the autocorrelation.</p>
+<p>For the most part, I have been using <a href="https://www.youtube.com/watch?v=PIuqxOBJqLU">Gaussian Process models</a>, and relying on the excellent example provided by Paul Bürkner showing how to <a href="https://cran.r-project.org/web/packages/brms/vignettes/brms_phylogenetics.html">estimate phylogenetic signal in BRMS</a>.</p>
+<p>For various reasons, I shifted to using a different software package, <a href="https://www.r-inla.org/">INLA</a>, and to ensure I understand the dynamics of this new system, I replicated Paul Bürkner’s example in INLA with the advice and guidance of Russell Dinnage.</p>
+<p>To remind us of the premise I copy the introduction below:</p>
+<blockquote>
+<h2 id="introduction">Introduction</h2>
+</blockquote>
+<blockquote>
+<p>In the present vignette, we want to discuss how to specify phylogenetic multilevel models using brms. These models are relevant in evolutionary biology when data of many species are analyzed at the same time. The usual approach would be to model species as a grouping factor in a multilevel model and estimate varying intercepts (and possibly also varying slopes) over species. However, species are not independent as they come from the same phylogenetic tree and we thus have to adjust our model to incorporate this dependency. The examples discussed here are from chapter 11 of the book Modern Phylogenetic Comparative Methods and the application in Evolutionary Biology (de Villemeruil &amp; Nakagawa, 2014). The necessary data can be downloaded from the corresponding website (<a href="https://www.mpcm-evolution.com/" class="uri">https://www.mpcm-evolution.com/</a>). Some of these models may take a few minutes to fit.</p>
+</blockquote>
+<blockquote>
+<h3 id="a-simple-phylogenetic-model">A Simple Phylogenetic Model</h3>
+</blockquote>
+<blockquote>
+<p>Assume we have measurements of a phenotype, phen (say the body size), and a cofactor variable (say the temperature of the environment). We prepare the data using the following code.</p>
+</blockquote>
+<p>We are going to use the same data as Paul, so we can compare outcomes:</p>
+<pre class="r"><code>library(INLA)</code></pre>
+<pre><code>## Loading required package: Matrix</code></pre>
+<pre><code>## Loading required package: foreach</code></pre>
+<pre><code>## Loading required package: parallel</code></pre>
+<pre><code>## Loading required package: sp</code></pre>
+<pre><code>## This is INLA_22.05.07 built 2022-05-07 09:58:26 UTC.
+##  - See www.r-inla.org/contact-us for how to get help.
+##  - To enable PARDISO sparse library; see inla.pardiso()</code></pre>
+<pre class="r"><code>library(ape)
+
+phylo &lt;- ape::read.nexus(&quot;https://paul-buerkner.github.io/data/phylo.nex&quot;)
+data_simple &lt;- read.table(
+  &quot;https://paul-buerkner.github.io/data/data_simple.txt&quot;,
+  header = TRUE
+)</code></pre>
+<p>To model the relationships between societies, BRMS requires a covariance matrix, but INLA uses precision matrices. So, where BRMS uses <code>ape::vcv.phylo</code> to build a covariance matrix, we instead used <code>MCMCglmm::inverseA</code>.</p>
+<pre class="r"><code>phylo_prec_mat = MCMCglmm::inverseA(phylo,
+                                   nodes = &quot;ALL&quot;,
+                                   scale = TRUE)$Ainv</code></pre>
+<p>You may notice that the precision matrix we built has many more columns and rows than we have taxa. This is because of the setting <code>nodes = "ALL"</code>, which builds the precision matrix for the relationships between all taxa AND nodes. Building the precision matrix this way creates a sparse matrix, and makes the model estimation more computationally efficient.</p>
+<p>However, this means that unlike BRMS, the rows of the phylogenetic matrix do not line up with the rows of the dataset we are going to model. So we need to match the rows in to the rows in <code>data_simple</code> to the rows in <code>phylo_prec_mat</code>.</p>
+<pre class="r"><code>phylo_id &lt;- match(phylo$tip.label, rownames(phylo_prec_mat))</code></pre>
+<p>Finally, we build the model using some defauly INLA settings.</p>
+<pre class="r"><code>model_simple = inla(phen ~ cofactor +
+                    f(phylo_id,
+                      model = &quot;generic0&quot;,
+                      Cmatrix = phylo_prec_mat),
+                  data = data_simple)</code></pre>
+<p>INLA and BRMS have similar model construction. Both approaches use the standard model formula <code>y ~ x</code>, which is how the response and fixed co-factor effect are modelled. INLA and BRMS differ in how they represent fixed effects. In BRMS the random effect is shown like so: <code>(1|gr(phylo, cov = A)</code>. The <code>1|</code> indicates varying intercepts, followed by the grouping function <code>gr</code> which acts as tool to insert and align the covariance matrix with the random effect: <code>cov = A</code>. INLA contains a similar model set-up tool called <code>f</code> for function. The <code>f</code> function is much more versatile than the <code>gr</code> function in <code>brms</code>, and is used to model a wide range of possible Gaussian models, and therefore more arguments. The second argument within <code>f</code> is <code>model</code>, which has 50 possibilities (see <code>names(inla.models()$latent)</code> for all models). We use the <a href="https://inla.r-inla-download.org/r-inla.org/doc/latent/generic0.pdf"><code>generic0</code> model</a>, which I explain in more detail below. The final argument is <code>Cmatrix</code> which contains our phylogenetic precision matrix.</p>
+<pre class="r"><code>summary(model_simple)</code></pre>
+<pre><code>## 
+## Call:
+##    c(&quot;inla.core(formula = formula, family = family, contrasts = contrasts, 
+##    &quot;, &quot; data = data, quantiles = quantiles, E = E, offset = offset, &quot;, &quot; 
+##    scale = scale, weights = weights, Ntrials = Ntrials, strata = strata, 
+##    &quot;, &quot; lp.scale = lp.scale, link.covariates = link.covariates, verbose = 
+##    verbose, &quot;, &quot; lincomb = lincomb, selection = selection, control.compute 
+##    = control.compute, &quot;, &quot; control.predictor = control.predictor, 
+##    control.family = control.family, &quot;, &quot; control.inla = control.inla, 
+##    control.fixed = control.fixed, &quot;, &quot; control.mode = control.mode, 
+##    control.expert = control.expert, &quot;, &quot; control.hazard = control.hazard, 
+##    control.lincomb = control.lincomb, &quot;, &quot; control.update = 
+##    control.update, control.lp.scale = control.lp.scale, &quot;, &quot; 
+##    control.pardiso = control.pardiso, only.hyperparam = only.hyperparam, 
+##    &quot;, &quot; inla.call = inla.call, inla.arg = inla.arg, num.threads = 
+##    num.threads, &quot;, &quot; blas.num.threads = blas.num.threads, keep = keep, 
+##    working.directory = working.directory, &quot;, &quot; silent = silent, inla.mode 
+##    = inla.mode, safe = FALSE, debug = debug, &quot;, &quot; .parent.frame = 
+##    .parent.frame)&quot;) 
+## Time used:
+##     Pre = 4.26, Running = 0.383, Post = 0.0552, Total = 4.7 
+## Fixed effects:
+##               mean    sd 0.025quant 0.5quant 0.975quant mode kld
+## (Intercept) 39.756 6.832     26.308   39.728     53.349   NA   0
+## cofactor     5.178 0.137      4.911    5.178      5.447   NA   0
+## 
+## Random effects:
+##   Name     Model
+##     phylo_id Generic0 model
+## 
+## Model hyperparameters:
+##                                          mean    sd 0.025quant 0.5quant
+## Precision for the Gaussian observations 0.012 0.002      0.009    0.012
+## Precision for phylo_id                  0.006 0.002      0.003    0.005
+##                                         0.975quant mode
+## Precision for the Gaussian observations      0.016   NA
+## Precision for phylo_id                       0.010   NA
+## 
+## Marginal log-Likelihood:  -1427.56 
+##  is computed 
+## Posterior summaries for the linear predictor and the fitted values are computed
+## (Posterior marginals needs also &#39;control.compute=list(return.marginals.predictor=TRUE)&#39;)</code></pre>
+<p>The hyperparameter for a generic0 model, <span class="math inline">\(\theta\)</span>, is a measure of precison - but the BRMS model measures the more common and intuitive phylogenetic variance. Fortunately, we can easily convert phylogeney</p>
+<p>The <code>generic0</code> model is useful for our goal of estimating phylogenetic signal, as it calculates the proportion of variance explained by phylogeny automatically.</p>
+</div>
+</div>
         <div class="post-footer">
             <div class="info">
                 

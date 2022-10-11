@@ -11,19 +11,19 @@ Categories: []
 DisableComments: no
 ---
 
-```{r setup, include=FALSE} 
+```{r setup, include=FALSE}
 knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
 ```
 
 # Phylogenetic signal in INLA
 
-Recently, my research has been focused on quantifying the importance of processes that might drive the patterns of similarity we observe within a particular variable - the autocorrelation.
+Recently, my research has been focused on quantifying the patterns of similarity we observe within a particular linguistic or cultural trait. That is, rather than asking the more traditional statistical question, does x predict y, I am asking what explains the similarity between values of y. This is also known as 'Galton's Problem' or, [as I prefer](), autocorrelation. Auto as is self (rather than auto as in automatic or car) - effectively, _self-correlation_. I mostly work with linguistic or cultural data, so for example: are closely related languages more similar for the trait of interest. 
 
-For the most part, I have been using [Gaussian Process models](https://www.youtube.com/watch?v=PIuqxOBJqLU), and have been building upwards from the [BRMS phylogenetic multilevel model example provided by Paul Bürkner]((https://cran.r-project.org/web/packages/brms/vignettes/brms_phylogenetics.html)).
+For the most part, I have been using [Gaussian Process models](https://www.youtube.com/watch?v=PIuqxOBJqLU), and have been building upwards from the [BRMS phylogenetic multilevel model example provided by Paul Bürkner]((https://cran.r-project.org/web/packages/brms/vignettes/brms_phylogenetics.html)). This example shows us how to estimate the amount of phylogenetic signal, specifically Pagel's Lambda, within a Bayesian multilevel model. Paul offers a number of different situations, but I am particularly interested in the simple and repeated-measures model.
 
-I have shifted to using a different software package, [INLA](https://www.r-inla.org/), and to ensure I understand the dynamics of this new modelling environment, I replicated Paul Bürkner's example in INLA with the advice and guidance of Russell Dinnage.
+While BRMS is an excellent package, an alternative I have started using is [INLA](https://www.r-inla.org/), under the guidance of [Russell Dinnage](https://twitter.com/ecologician?ref_src=twsrc%5Egoogle%7Ctwcamp%5Eserp%7Ctwgr%5Eauthor). To ensure I understand the dynamics of this new modelling environment, Russell helped me replicated Paul Bürkner's example in INLA.
 
-To remind us of the premise I copy Paul's introduction below:
+To ground the premise of this example I copy Paul's introduction below:
 
 > In the present vignette, we want to discuss how to specify phylogenetic multilevel models using brms. These models are relevant in evolutionary biology when data of many species are analyzed at the same time. The usual approach would be to model species as a grouping factor in a multilevel model and estimate varying intercepts (and possibly also varying slopes) over species. However, species are not independent as they come from the same phylogenetic tree and we thus have to adjust our model to incorporate this dependency. The examples discussed here are from chapter 11 of the book Modern Phylogenetic Comparative Methods and the application in Evolutionary Biology (de Villemeruil & Nakagawa, 2014). The necessary data can be downloaded from the corresponding website (<https://www.mpcm-evolution.com/>). Some of these models may take a few minutes to fit.
 
@@ -45,34 +45,55 @@ data_simple <- read.table(
 )
 ```
 
-To model the relationships between societies BRMS requires a covariance matrix, but INLA uses precision matrices. So, where BRMS uses `ape::vcv.phylo` to build a covariance matrix, we instead used `MCMCglmm::inverseA`.
+To model the relationships between societies BRMS requires a covariance matrix, but INLA uses precision matrices. So, where BRMS uses `ape::vcv.phylo` to build a covariance matrix, we instead used `MCMCglmm::inverseA`. INLA also requires that we identify the relationship between the precision matrix and dataframe using indices, rather than names as BRMS does. We ensure the two objects match up with the `match` function. Unlike BRMS, INLA requires that taxa are identified by numbers, rather than labels. `match` fortunately returns numeric values, so this is not a huge computing issue, although it can make things fiddly when investigating the model results. 
 
 ```{r}
 phylo_prec_mat = MCMCglmm::inverseA(phylo,
-                                   nodes = "ALL",
+                                   nodes = "TIPS",
                                    scale = TRUE)$Ainv
+
+data_simple$phylo_id = match(data_simple$phylo, rownames(phylo_prec_mat))
 ```
 
-You may notice that the precision matrix we built contains many more columns and rows than we have taxa. This is because of the setting `nodes = "ALL"`, which builds the precision matrix for all taxa AND nodes. We could change this setting to  `nodes = "TIPS"`, which would mean we have the same number of rows and columns as taxa. Building the precision matrix for both tips and nodes creates a _sparse_ matrix, which makes the model estimation more computationally efficient - even though it includes information we won't use.
-
-This means that unlike BRMS, the rows of the phylogenetic matrix do not line up with the rows of the dataset we are going to model. To accomodate this, we need to match the rows in to the rows in `data_simple` to the rows in `phylo_prec_mat`.
-
-```{r}
-phylo_id <- match(phylo$tip.label, rownames(phylo_prec_mat))
-```
-
-With the precision matrix built and data lined up we can build the model using the deafult prior settings for INLA.
+With the precision matrix built and data lined up we can build the model using the default prior settings for INLA. Beneath the INLA model, I show the BRMS code for comparison.
 
 ```{r}
 model_simple = inla(phen ~ cofactor +
                     f(phylo_id,
                       model = "generic0",
                       Cmatrix = phylo_prec_mat),
-                  data = data_simple,
+                  family = "gaussian",
+                  data = data_simple, 
                   control.compute=list(config = TRUE))
+
+# BRMS Model
+# model_simple <- brm(
+#   phen ~ cofactor + (1|gr(phylo, cov = A)),
+#   data = data_simple,
+#   family = gaussian(),
+#   data2 = list(A = A),
+#   prior = c(
+#     prior(normal(0, 10), "b"),
+#     prior(normal(0, 50), "Intercept"),
+#     prior(student_t(3, 0, 20), "sd"),
+#     prior(student_t(3, 0, 20), "sigma")
+#   )
+# )
+
 ```
 
-INLA and BRMS have similar model grammar. Both approaches use the standard model formula `y ~ x`, which is how the response and fixed co-factor effect are represented. INLA and BRMS differ in how they represent random effects. In BRMS the random effect is shown like so: `(1|gr(phylo, cov = A)`. The `1|` indicates varying intercepts, followed by the grouping function `gr` which acts as tool to insert and align the observations `phylo` with the covariance matrix `cov = A`. INLA contains a similar random effect set-up tool called `f` for function. `f` models random intercepts if only one categorical variable is given, and random slopes if a second continuous co-variate is given. `f`  is more versatile than the `gr` function in `brms`, and is used to model a wide range of possible Gaussian models, and therefore more arguments. The second argument within `f` is `model`, which has 50 possibilities and defines how the precision estimates are calculated (see `names(inla.models()$latent)` for all models). We use the [`generic0` model](https://inla.r-inla-download.org/r-inla.org/doc/latent/generic0.pdf), which I explain in more detail below. The final argument is `Cmatrix` which contains our phylogenetic precision matrix. 
+INLA and BRMS have similar model grammars. Both approaches use the standard model formula `y ~ x`, which is how the response and fixed co-factor effect are represented. The primary difference in model grammar between BRMS and INLA comes with the specification of random effects, so it worth spending some time looking at the construction of INLA's random effects and the BRMS counterparts. INLA specifies random effects using `f`, which is short for function. `f` has three inputs above. First is a categorical variable indicating which taxa is assigned to which row of the data, much the same as BRMS. By offering a single categorical variable to `f`, we are building a model with random intercepts. Next is th `model`. There are 50 model possibilities which define how the precision estimates are calculated (see `names(inla.models()$latent)` for all models). For the replication of the BRMS example, we use the [`generic0` model](https://inla.r-inla-download.org/r-inla.org/doc/latent/generic0.pdf). `generic0` applies one parameter $\tau$ to the precision matrix and is the model I have used most for autocorrelational models, although look through the list of possibilities to see if any other model might better suit your purposes. The final argument in `f` is `Cmatrix`, which is where the precision matrix goes.
+
+
+
+<!-- In BRMS the random effect is shown like so: `(1|gr(phylo, cov = A)`. . The `1|` indicates varying intercepts, followed by the grouping function `gr` which acts as tool to insert and align the observations `phylo` with the covariance matrix `cov = A`. INLA contains a similar random effect set-up tool called `f` for function. `f` models random intercepts if only one categorical variable is given, and random slopes if a second continuous co-variate is given. Since the primary difference in model grammar between BRMS and INLA comes with the specification of random effects  The second argument within `f` is `model`, which has 50 possibilities and defines how the precision estimates are calculated (see `names(inla.models()$latent)` for all models). We use the [`generic0` model](https://inla.r-inla-download.org/r-inla.org/doc/latent/generic0.pdf), which I explain in more detail below. -->
+
+
+After looking at `f` we can look at the remaining arguments to the `inla` function: `family`, `data`, and `control.compute`. `family` works like many other R statistical modelling packages, and specifies the distribution you want to use for your model. Here, we are using `gaussian`, but INLA can handle most common distributions. `data` should again be familiar, this takes the data that is going to be modelled. Finally, 
+
+
+<!-- Finally, where BRMS takes two arguments to relate the covariance matrix to the formula: the covariance matrix object is named in `data2` and the name from `data2` (in this case it is `A`) is used in the formula. INLA on the other had take the precision matrix as an object directly into the formula through the `Cmatrix` argument.  -->
+<!-- How random effects are specified is the primary difference between BRMS and INLA when specifying a phylogenetic model, and since this post is introducing INLA, it is worth looking at the `f` function in some more detail.  The final argument is `Cmatrix` which contains our phylogenetic precision matrix. -->
 
 First we show the INLA output
 
@@ -82,40 +103,39 @@ summary(model_simple)
 
 Followed by the BRMS output:
 
-```
- Family: gaussian 
-  Links: mu = identity; sigma = identity 
-Formula: phen ~ cofactor + (1 | gr(phylo, cov = A)) 
-   Data: data_simple (Number of observations: 200) 
-  Draws: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;
-         total post-warmup draws = 4000
+     Family: gaussian 
+      Links: mu = identity; sigma = identity 
+    Formula: phen ~ cofactor + (1 | gr(phylo, cov = A)) 
+       Data: data_simple (Number of observations: 200) 
+      Draws: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;
+             total post-warmup draws = 4000
 
-Group-Level Effects: 
-~phylo (Number of levels: 200) 
+    Group-Level Effects: 
+    ~phylo (Number of levels: 200) 
+                  Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+    sd(Intercept)    14.57      2.14    10.45    18.90 1.00      873     1347
+
+    Population-Level Effects: 
               Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-sd(Intercept)    14.57      2.14    10.45    18.90 1.00      873     1347
+    Intercept    38.16      7.04    24.55    51.82 1.00     2286     2438
+    cofactor      5.18      0.14     4.91     5.45 1.00     6730     3471
 
-Population-Level Effects: 
+    Family Specific Parameters: 
           Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-Intercept    38.16      7.04    24.55    51.82 1.00     2286     2438
-cofactor      5.18      0.14     4.91     5.45 1.00     6730     3471
+    sigma     9.19      0.72     7.85    10.68 1.00     1107     1898
 
-Family Specific Parameters: 
-      Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-sigma     9.19      0.72     7.85    10.68 1.00     1107     1898
+    Draws were sampled using sampling(NUTS). For each parameter, Bulk_ESS
+    and Tail_ESS are effective sample size measures, and Rhat is the potential
+    scale reduction factor on split chains (at convergence, Rhat = 1).
 
-Draws were sampled using sampling(NUTS). For each parameter, Bulk_ESS
-and Tail_ESS are effective sample size measures, and Rhat is the potential
-scale reduction factor on split chains (at convergence, Rhat = 1).
-```
+INLA prints two main areas of output we are interested in: `Fixed effects` (titled `Populations-Level Effects` in BRMS output) and `Model hyperparameters` (`Group-Level Effects`). Both INLA and BRMS estimate fixed effects in similar ways, and the results are comparable between these two approaches.
 
-INLA prints two main areas of output we are interested in: `Fixed effects` (titled `Populations-Level Effects` in BRMS output) and `Model hyperparameters` (`Group-Level Effects`). Both INLA and BRMS estimate fixed effects in similar ways, and the results are comparable between these two approaches. 
-
-The hyperparameters for random effects in INLA are precision estimates, as opposed to variance estimates in BRMS. So, they are not directly comparable. Fortunately, precision estimates are easily converted to the more intuitive variance estimates using the formula $\sqrt(1 / \tau)$. After this conversion, we see that INLA estimates a slightly smaller phylogenetic effect than BRMS does. 
+The hyperparameters for random effects in INLA are precision estimates, as opposed to variance estimates in BRMS. So, they are not directly comparable. Fortunately, precision estimates are easily converted to the more intuitive variance estimates using the formula $\sqrt(1 / \tau)$. After this conversion, we see that INLA estimates a slightly smaller phylogenetic effect than BRMS does.
 
 ```{r}
 round(sqrt(1/model_simple$summary.hyperpar), 2)
 ```
+
 The most intuitive aspect of the BRMS example is presenting the posterior distribution of phylogenetic signal. To produce the same plot from the INLA model, we can use the following code:
 
 ```{r}
@@ -163,8 +183,7 @@ ggplot(lambda_estimates, aes(x = Precision.for.phylo_id)) +
         axis.ticks = element_blank())
 ```
 
-
-## A Phylogenetic model with Repeated Measurements 
+## A Phylogenetic model with Repeated Measurements
 
 > Often, we have multiple observations per species and this allows to fit more complicated phylogenetic models.
 
@@ -181,6 +200,7 @@ head(data_repeat)
 data_repeat$phylo_id_rep <- match(data_repeat$phylo, rownames(phylo_prec_mat))
 data_repeat$specied_id = phylo_id_rep
 ```
+
 > The variable spec_mean_cf just contains the mean of the cofactor for each species. The code for the repeated measurement phylogenetic model looks as follows:
 
 ```{r}
@@ -211,4 +231,3 @@ ggplot(lambda_estimates, aes(x = Precision.for.phylo_id_rep)) +
   theme(axis.text.y = element_blank(),
         axis.ticks = element_blank())
 ```
-
