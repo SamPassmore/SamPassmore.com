@@ -6,7 +6,7 @@ slug: []
 categories: []
 tags: []
 Description: 'Funding details in NZ and Australia'
-Tags: [funding]
+Tags: []
 Categories: []
 DisableComments: yes
 ---
