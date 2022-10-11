@@ -1,12 +1,21 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Posts on Website of Sam Passmore</title>
+    <title>Posts on Dr Sam Passmore</title>
     <link>https://www.sampassmore.com/post/</link>
-    <description>Recent content in Posts on Website of Sam Passmore</description>
+    <description>Recent content in Posts on Dr Sam Passmore</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Fri, 06 Mar 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://www.sampassmore.com/post/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 11 Oct 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://www.sampassmore.com/post/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Funding in Australia and New Zealand</title>
+      <link>https://www.sampassmore.com/post/2022-10-11-funding-in-australia-and-new-zealand/</link>
+      <pubDate>Tue, 11 Oct 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.sampassmore.com/post/2022-10-11-funding-in-australia-and-new-zealand/</guid>
+      <description>To keep track of the various funding opportunities available to me and that I am interested in, I have created this blog page.</description>
+    </item>
+    
     <item>
       <title>The problem with Galton&#39;s problem</title>
       <link>https://www.sampassmore.com/post/galtons-problem/</link>
