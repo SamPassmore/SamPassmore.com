@@ -5,14 +5,16 @@ description: Publication page
 title: Publications
 ---
 
+Wood, A. L. C., Kirby, K. R., Ember, C. R., Silbert, S., __Passmore, S.__, Daikoku, H., … Savage, P. E. (2022). The Global Jukebox: A public database of performing arts and culture. PLOS ONE, 17(11), e0275469. https://doi.org/10.1371/journal.pone.0275469
+
+[__[Blog post](/post/2022-11-29-the-global-jukebox)__]
+
 Savage, P. E., __Passmore, S.__, Chiba, G., Currie, T. E., Suzuki, H., & Atkinson, Q. D. (2022). Sequence alignment of folk song melodies reveals cross-cultural regularities of musical evolution. Current Biology. https://doi.org/10.1016/j.cub.2022.01.039
 
 [__[New Scientist](https://www.newscientist.com/article/2307192-japanese-and-english-language-folk-songs-evolved-in-the-same-way/)__] [__[Podcast](https://www.scientificamerican.com/podcast/episode/researchers-analyzed-folk-music-like-it-was-mutating-dna-they-found-amazing-parallels-between-life-and-art/?utm_medium=Social&utm_source=Twitter#Echobox=1646326097)__]
 [__[Comment](https://www.sciencedirect.com/science/article/pii/S096098222200207X?casa_token=nNKuImOpwAIAAAAA:pDxixvH2RFdLBf4Iw62Hff8z4I3HqmN5KgXd8hPop4hCJkYiA_1H74b2lGB7UFFW8wvjUh_jYXc)__]
 
 __Passmore, S.__, & Watts, J. (2022). WEIRD people and the Western Church: Who made whom? Religion, Brain & Behavior. (world). Retrieved from https://www.tandfonline.com/doi/abs/10.1080/2153599X.2021.1991459
-
-Wood, A., Kirby, K. R., Ember, C., Silbert, S., __Passmore, S.__, Daikoku, H., … Savage, P. E. The Global Jukebox: A public database of performing arts and culture. https://doi.org/10.31234/osf.io/4z97j (Pre-Print)
 
 __Passmore, S.__, Barth, W., Quinn, K., Greenhill, S. J., Evans, N., & Jordan, F. M. (2021). Kin Against Kin: Internal Co-selection and the Coherence of Kinship Typologies. Biological Theory. https://doi.org/10.1007/s13752-021-00379-6
 
