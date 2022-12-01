@@ -20,6 +20,11 @@ Alongside the audio recordings, the GJB contains a number of expertly coded data
 
 Since music is so prevalent in everyday life, there was great interest in the global variance of music that the GJB openly provides. This page documents some of the media interest for this papers release. 
 
+Press releases:
+
+* [伝統芸能データベース「Global Jukebox」の公開－1,026民族を代表する、5,776件の音声記録がインタラクティブに利用可能－](https://www.keio.ac.jp/ja/press-releases/2022/11/10/28-133344/)
+* ["Global Jukebox" Performing Arts Database Now Publicly Available: Data Made Available for Interactive Collection of 5,776 Recordings, Representing 1,026 Societies](https://www.keio.ac.jp/en/press-releases/2022/Nov/4/49-133250/)
+
 ## Famous in Japan
 
 The Global Jukebox was well received in Japan [receiving 354.8k views, 27.9k likes and 12.4k retweets on twitter](https://twitter.com/wyrm06/status/1591013207992590336?s=20&t=zmx2L0pT58lUHqJ4-Gr3fg) after a review of the site was posted by Japanese musician Ryūichirō Sakan. 
@@ -33,6 +38,16 @@ The press release was also picked up by various English, German, and Spanish med
 * [Phys.org: "Global Jukebox" performing arts database now publicly available](https://phys.org/news/2022-11-global-jukebox-arts-database-publicly.html)
 * [Deutschlandfunk Nova: Globale Jukebox mit Tausenden traditionellen Liedern](https://www.deutschlandfunknova.de/nachrichten/globale-jukebox-datenbank-mit-tausenden-traditionellen-liedern-erstellt)
 * [La Razon: La rockola del planeta: permite escuchar canciones de más de 1.000 culturas](https://www.larazon.es/tecnologia/20221102/dgn7icuf2jf5ln72oywgk5zawa.html)
+
+# Earlier Coverage
+
+The Global Jukebox had been in preparation for some time before the formal release. Here is some earlier media coverage:
+
+* Russonello, G. (2017, July 11). [The unfinished work of Alan Lomax’s Global Jukebox. New York Times.](https://www.nytimes.com/2017/07/11/arts/music/alan-lomax-global-jukebox-digital-archive.html)
+* Chow, A. R. (2017, April 18). [Alan Lomax recordings are digitized in a new online collection. New York Times.](https://www.nytimes.com/2017/04/18/arts/music/alan-lomax-recordings-the-global-jukebox-digitized.html)
+* Paul Zollo. (2020, April 6). [Global Jukebox offers free music from around the world. American Songwriter.](https://americansongwriter.com/global-jukebox-free-world-music/)
+* Reed, R. (2017, April 19). [Hear music from 1,000 cultures on massive Alan Lomax recordings site. Rolling Stone.](https://www.rollingstone.com/music/music-news/hear-music-from-1000-cultures-on-massive-alan-lomax-recordings-site-109086/)
+* Grant, C. (2015, January 29). [Sounding the Global Jukebox: We owe Alan Lomax a debt of thanks. The Conversation.](https://theconversation.com/sounding-the-global-jukebox-we-owe-alan-lomax-a-debt-of-thanks-36206)
 
 **Citation**
 
