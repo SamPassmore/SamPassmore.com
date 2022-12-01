@@ -51,6 +51,6 @@ The Global Jukebox had been in preparation for some time before the formal relea
 
 **Citation**
 
-Wood, A. L. C., Kirby, K. R., Ember, C. R., Silbert, S., Passmore, S., Daikoku, H., … Savage, P. E. (2022). The Global Jukebox: A public database of performing arts and culture. PLOS ONE, 17(11), e0275469. https://doi.org/10.1371/journal.pone.0275469
+Wood, A. L. C., Kirby, K. R., Ember, C. R., Silbert, S., **Passmore, S.**, Daikoku, H., … Savage, P. E. (2022). The Global Jukebox: A public database of performing arts and culture. PLOS ONE, 17(11), e0275469. https://doi.org/10.1371/journal.pone.0275469
 
 
