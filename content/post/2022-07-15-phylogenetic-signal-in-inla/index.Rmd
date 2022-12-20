@@ -25,7 +25,7 @@ For the most part, I have been using [Gaussian Process models](https://www.youtu
 
 While BRMS is an excellent package, an alternative I have started using is [INLA](https://www.r-inla.org/), under the guidance of [Russell Dinnage](https://twitter.com/ecologician). To ensure I understand the dynamics of this new modelling environment, Russell helped me replicated Paul Bürkner's example in INLA.
 
-To ground the premise of this example I copy Paul's introduction below:
+The goal here is to replicate Paul's analyses within the INLA framework. Here is the introduction from Paul's vignette: 
 
 > In the present vignette, we want to discuss how to specify phylogenetic multilevel models using brms. These models are relevant in evolutionary biology when data of many species are analyzed at the same time. The usual approach would be to model species as a grouping factor in a multilevel model and estimate varying intercepts (and possibly also varying slopes) over species. However, species are not independent as they come from the same phylogenetic tree and we thus have to adjust our model to incorporate this dependency. The examples discussed here are from chapter 11 of the book Modern Phylogenetic Comparative Methods and the application in Evolutionary Biology (de Villemeruil & Nakagawa, 2014). The necessary data can be downloaded from the corresponding website (<https://www.mpcm-evolution.com/>). Some of these models may take a few minutes to fit.
 
@@ -50,7 +50,7 @@ data_simple <- read.table(
 
 To model the relationships between societies BRMS requires a covariance matrix, but INLA uses precision matrices. So, where BRMS uses `ape::vcv.phylo` to build a covariance matrix, we instead used `MCMCglmm::inverseA` to get a precision matrix of the phylogeny. 
 
-INLA also requires that we identify the relationship between the precision matrix and dataframe using numerical indices, rather than character names as BRMS does. To get indicies I use the `match` function. 
+INLA also requires that we identify the relationship between the precision matrix and data frame using numerical indices, rather than character names, as in BRMS. To get the indices you can use the `match` function. 
 
 ```{r}
 # INLA Precision matrix
@@ -124,7 +124,7 @@ round(sqrt(1/model_simple_inla$summary.hyperpar), 2)
 The most intuitive aspect of the BRMS example is presenting the posterior distribution of phylogenetic signal. To produce the same plot from the INLA model, we can use the following code:
 
 ```{r}
-posterior = inla.hyperpar.sample(n = 1000, model_simple)
+posterior = inla.hyperpar.sample(n = 1000, model_simple_inla)
 lambda_estimates = data.frame(1 / posterior / rowSums(1 / posterior))
 
 ggplot(lambda_estimates, aes(x = Precision.for.phylo_id)) + 
