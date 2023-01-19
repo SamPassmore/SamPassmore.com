@@ -1,14 +1,15 @@
 ---
 title: "Phylogenetic Signal in INLA"
 author: "R package build"
-date: '2022-07-15'
-slug: []
+date: "2022-07-15"
+output: pdf_document
 categories: []
 tags: []
 Description: ''
 Tags: []
 Categories: []
 DisableComments: no
+slug: []
 ---
 
 
@@ -97,10 +98,10 @@ model_simple_brms &lt;- brm(
 ##    = inla.mode, safe = FALSE, debug = debug, &quot;, &quot; .parent.frame = 
 ##    .parent.frame)&quot;) 
 ## Time used:
-##     Pre = 3.66, Running = 0.533, Post = 0.0425, Total = 4.24 
+##     Pre = 3.83, Running = 0.581, Post = 0.0426, Total = 4.46 
 ## Fixed effects:
 ##               mean    sd 0.025quant 0.5quant 0.975quant mode kld
-## (Intercept) 39.759 6.848     26.281   39.732     53.380   NA   0
+## (Intercept) 39.757 6.832     26.311   39.731     53.342   NA   0
 ## cofactor     5.178 0.137      4.911    5.178      5.447   NA   0
 ## 
 ## Random effects:
@@ -110,12 +111,12 @@ model_simple_brms &lt;- brm(
 ## Model hyperparameters:
 ##                                          mean    sd 0.025quant 0.5quant
 ## Precision for the Gaussian observations 0.012 0.002      0.009    0.012
-## Precision for phylo_id                  0.006 0.002      0.003    0.005
+## Precision for phylo_id                  0.006 0.002      0.003    0.006
 ##                                         0.975quant mode
-## Precision for the Gaussian observations      0.016   NA
-## Precision for phylo_id                       0.010   NA
+## Precision for the Gaussian observations      0.015   NA
+## Precision for phylo_id                       0.011   NA
 ## 
-## Marginal log-Likelihood:  -1008.87 
+## Marginal log-Likelihood:  -1008.45 
 ##  is computed 
 ## Posterior summaries for the linear predictor and the fitted values are computed
 ## (Posterior marginals needs also &#39;control.compute=list(return.marginals.predictor=TRUE)&#39;)</code></pre>
@@ -126,13 +127,13 @@ posterior_sample = inla.hyperpar.sample(4000, model_simple_inla) # 4000 samples 
 lambda = (1 / posterior_sample[,2]) / (rowSums(1 / posterior_sample))
 summary(lambda)</code></pre>
 <pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-##  0.2918  0.6210  0.6862  0.6776  0.7395  0.9052</code></pre>
+##  0.2803  0.6033  0.6729  0.6630  0.7317  0.8937</code></pre>
 <pre class="r"><code># BRMS output
 hyp &lt;- &quot;sd_phylo__Intercept^2 / (sd_phylo__Intercept^2 + sigma^2) = 0&quot;
 hyp &lt;- hypothesis(model_simple_brms, hyp, class = NULL)
 summary(hyp$samples[,1])</code></pre>
 <pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-##  0.2575  0.6498  0.7077  0.6980  0.7583  0.8915</code></pre>
+##  0.2834  0.6518  0.7108  0.7015  0.7618  0.8931</code></pre>
 <pre class="r"><code>plot_df = data.frame(inla = lambda,
                      brms = c(hyp$samples[,1]),
                      iter = 1:4000)
@@ -164,12 +165,12 @@ plot_df$inla.pc = lambda.pc
 
 summary(plot_df[,c(1:2,4)])</code></pre>
 <pre><code>##       inla             brms           inla.pc      
-##  Min.   :0.2918   Min.   :0.2575   Min.   :0.3530  
-##  1st Qu.:0.6210   1st Qu.:0.6498   1st Qu.:0.6464  
-##  Median :0.6862   Median :0.7077   Median :0.7038  
-##  Mean   :0.6776   Mean   :0.6980   Mean   :0.6969  
-##  3rd Qu.:0.7395   3rd Qu.:0.7583   3rd Qu.:0.7547  
-##  Max.   :0.9052   Max.   :0.8915   Max.   :0.9164</code></pre>
+##  Min.   :0.2803   Min.   :0.2834   Min.   :0.3612  
+##  1st Qu.:0.6033   1st Qu.:0.6518   1st Qu.:0.6320  
+##  Median :0.6729   Median :0.7108   Median :0.6930  
+##  Mean   :0.6630   Mean   :0.7015   Mean   :0.6846  
+##  3rd Qu.:0.7317   3rd Qu.:0.7618   3rd Qu.:0.7447  
+##  Max.   :0.8937   Max.   :0.8931   Max.   :0.9209</code></pre>
 <pre class="r"><code>ggplot() + 
   geom_density(data = plot_df, aes(inla), fill = &quot;red&quot;, alpha = 0.3) + 
   geom_density(data = plot_df, aes(inla.pc), fill = &quot;yellow&quot;, alpha = 0.3) +
@@ -238,24 +239,24 @@ posterior_sample = inla.hyperpar.sample(6000, model_inla_repeat1) # 6000 samples
 lambda = (1 / posterior_sample[,2]) / (rowSums(1 / posterior_sample))
 summary(lambda)</code></pre>
 <pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-##  0.5540  0.7249  0.7617  0.7588  0.7961  0.8978</code></pre>
+##  0.5730  0.7276  0.7596  0.7577  0.7904  0.8963</code></pre>
 <pre class="r"><code># BRMS output
 hyp &lt;- paste(&quot;sd_phylo__Intercept^2 /&quot;, &quot;(sd_phylo__Intercept^2 + sd_species__Intercept^2 + sigma^2) = 0&quot;)
 hyp &lt;- hypothesis(model_brms_repeat1, hyp, class = NULL)
 summary(hyp$samples[,1])</code></pre>
 <pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-##  0.4625  0.7066  0.7450  0.7413  0.7818  0.8798</code></pre>
+##  0.4791  0.7072  0.7455  0.7414  0.7827  0.8967</code></pre>
 <pre class="r"><code>plot_df = data.frame(inla = lambda,
                      brms = c(hyp$samples[,1]))
 
 summary(plot_df)</code></pre>
 <pre><code>##       inla             brms       
-##  Min.   :0.5540   Min.   :0.4625  
-##  1st Qu.:0.7249   1st Qu.:0.7066  
-##  Median :0.7617   Median :0.7450  
-##  Mean   :0.7588   Mean   :0.7413  
-##  3rd Qu.:0.7961   3rd Qu.:0.7818  
-##  Max.   :0.8978   Max.   :0.8798</code></pre>
+##  Min.   :0.5730   Min.   :0.4791  
+##  1st Qu.:0.7276   1st Qu.:0.7072  
+##  Median :0.7596   Median :0.7455  
+##  Mean   :0.7577   Mean   :0.7414  
+##  3rd Qu.:0.7904   3rd Qu.:0.7827  
+##  Max.   :0.8963   Max.   :0.8967</code></pre>
 <pre class="r"><code>ggplot() + 
   geom_density(data = plot_df, aes(inla), fill = &quot;red&quot;, alpha = 0.3) + 
   geom_density(data = plot_df, aes(brms), fill = &quot;blue&quot;, alpha = 0.3) +
