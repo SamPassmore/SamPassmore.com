@@ -1,0 +1,266 @@
+---
+title: "Phylogenetic Signal in INLA"
+author: "R package build"
+date: "2022-07-15"
+output: pdf_document
+categories: []
+tags: []
+Description: ''
+Tags: []
+Categories: []
+DisableComments: no
+slug: []
+---
+
+
+
+<div id="phylogenetic-signal-in-inla" class="section level1">
+<h1>Phylogenetic signal in INLA</h1>
+<p>Recently, my research has been focused on quantifying the patterns of similarity we observe within a particular linguistic or cultural trait, also known as autocorrelation. In anthropology some people call this ‘Galton’s Problem’ but I have outlined why I prefer the term autocorrelation <a href="/post/galtons-problem">here</a>. A helpful way to remember what autocorrelation means is that the auto is used to mean self (as it is in autobiography). So autocorrelation really just means <em>self-correlation</em>.</p>
+<p>For the most part, I have been using <a href="https://www.youtube.com/watch?v=PIuqxOBJqLU">Gaussian Process models</a> to quantify autocorrelational effects of phylogenies of linguistic and cultural data, and have been building upwards from the <a href="(https://cran.r-project.org/web/packages/brms/vignettes/brms_phylogenetics.html)">BRMS phylogenetic multilevel model example provided by Paul Bürkner</a>. This example shows us how to estimate the amount of phylogenetic signal, specifically Pagel’s Lambda, within a Bayesian multilevel model. Paul offers a number of different situations, but I am particularly interested in the simple and repeated-measures model.</p>
+<p>BRMS is an excellent package for building these models, but an alternative I have started using is <a href="https://www.r-inla.org/">INLA</a>, under the guidance of <a href="https://twitter.com/ecologician">Russell Dinnage</a>. To ensure I understand the dynamics of this new modelling environment, Russell helped me replicated Paul Bürkner’s example in INLA.</p>
+<p>The goal here is to replicate Paul’s analyses within the INLA framework. Here is the introduction from Paul’s vignette:</p>
+<blockquote>
+<p>In the present vignette, we want to discuss how to specify phylogenetic multilevel models using brms. These models are relevant in evolutionary biology when data of many species are analyzed at the same time. The usual approach would be to model species as a grouping factor in a multilevel model and estimate varying intercepts (and possibly also varying slopes) over species. However, species are not independent as they come from the same phylogenetic tree and we thus have to adjust our model to incorporate this dependency. The examples discussed here are from chapter 11 of the book Modern Phylogenetic Comparative Methods and the application in Evolutionary Biology (de Villemeruil &amp; Nakagawa, 2014). The necessary data can be downloaded from the corresponding website (<a href="https://www.mpcm-evolution.com/" class="uri">https://www.mpcm-evolution.com/</a>). Some of these models may take a few minutes to fit.</p>
+</blockquote>
+<blockquote>
+<h3 id="a-simple-phylogenetic-model">A Simple Phylogenetic Model</h3>
+</blockquote>
+<blockquote>
+<p>Assume we have measurements of a phenotype, phen (say the body size), and a cofactor variable (say the temperature of the environment). We prepare the data using the following code.</p>
+</blockquote>
+<p>We are going to use the same data as Paul, so we can compare outcomes:</p>
+<pre class="r"><code>library(INLA)
+library(brms)
+library(ape)
+library(ggplot2)
+library(tidyr)
+
+phylo &lt;- ape::read.nexus(&quot;https://paul-buerkner.github.io/data/phylo.nex&quot;)
+data_simple &lt;- read.table(
+  &quot;https://paul-buerkner.github.io/data/data_simple.txt&quot;,
+  header = TRUE
+)</code></pre>
+<p>To model the relationships between societies BRMS requires a covariance matrix, but INLA uses precision matrices. So, where BRMS uses <code>ape::vcv.phylo</code> to build a covariance matrix, we instead used <code>MCMCglmm::inverseA</code> to get a precision matrix of the phylogeny.</p>
+<p>INLA also requires that we identify the relationship between the precision matrix and data frame using numerical indices, rather than character names, as in BRMS. To get the indices you can use the <code>match</code> function.</p>
+<pre class="r"><code># INLA Precision matrix
+phylo_prec_mat = MCMCglmm::inverseA(phylo,
+                                   nodes = &quot;TIPS&quot;,
+                                   scale = TRUE)$Ainv
+
+# matching with numerical indicies
+data_simple$phylo_id = match(data_simple$phylo, rownames(phylo_prec_mat))
+
+# BRMS Covariance matrix
+A &lt;- ape::vcv.phylo(phylo)</code></pre>
+<p>With the precision matrix built and data lined up we can build the model using the default prior settings for INLA. Beneath the INLA model, I show the BRMS code for comparison.</p>
+<pre class="r"><code># INLA model
+model_simple_inla = inla(phen ~ cofactor +
+                    f(phylo_id,
+                      model = &quot;generic0&quot;,
+                      Cmatrix = phylo_prec_mat),
+                  family = &quot;gaussian&quot;,
+                  data = data_simple)
+
+# BRMS Model
+model_simple_brms &lt;- brm(
+  phen ~ cofactor + (1|gr(phylo, cov = A)),
+  data = data_simple,
+  family = gaussian(),
+  data2 = list(A = A),
+  prior = c(
+    prior(normal(0, 10), &quot;b&quot;),
+    prior(normal(0, 50), &quot;Intercept&quot;),
+    prior(student_t(3, 0, 20), &quot;sd&quot;),
+    prior(student_t(3, 0, 20), &quot;sigma&quot;)
+  )
+)</code></pre>
+<p>INLA and BRMS have similar model grammars, but there are important differences. Both approaches use the standard model formula for response and fixed effects: <code>y ~ x</code>. The primary difference in model grammar between BRMS and INLA comes with the specification of random effects, so it worth spending some time comparing the two. INLA specifies random effects using <code>f</code>, which is short for function. <code>f</code> has three inputs in the above model. First is the numerical indices variable indicating which taxa is assigned to which row of the input data. By offering a single categorical variable to <code>f</code>, we are building a model with random intercepts, mimicing the BRMS model. Next is the <code>model</code> argument. There are 50 model possibilities which define how the precision estimates are calculated (see <code>names(inla.models()$latent)</code> for all models). For the replication of the BRMS example, we use the <a href="https://inla.r-inla-download.org/r-inla.org/doc/latent/generic0.pdf"><code>generic0</code> model</a>. <code>generic0</code> which applies one parameter <code>$\tau$</code> to the precision matrix and is the model I have used most for autocorrelational models. Although it is worthwhile to look through the list of possibilities to see if any other model might better suit your purposes. The final argument in <code>f</code> is <code>Cmatrix</code>, which is where the precision matrix goes.</p>
+<p>After looking at <code>f</code> we can look at the remaining arguments to the <code>inla</code> function: <code>family</code>, and <code>data</code>. <code>family</code> works like many other R statistical modelling packages, and specifies the distribution you want to use for your model. Here, we are using <code>gaussian</code>, but INLA can handle most common distributions, like <code>binomial</code> or <code>poisson</code>. <code>data</code> should again be familiar, this takes the data to be used in the model. <code>data</code> works much like many other modelling inputs, and is where the fixed effect data comes from for your model.</p>
+<pre class="r"><code>summary(model_simple_inla)</code></pre>
+<pre><code>## 
+## Call:
+##    c(&quot;inla.core(formula = formula, family = family, contrasts = contrasts, 
+##    &quot;, &quot; data = data, quantiles = quantiles, E = E, offset = offset, &quot;, &quot; 
+##    scale = scale, weights = weights, Ntrials = Ntrials, strata = strata, 
+##    &quot;, &quot; lp.scale = lp.scale, link.covariates = link.covariates, verbose = 
+##    verbose, &quot;, &quot; lincomb = lincomb, selection = selection, control.compute 
+##    = control.compute, &quot;, &quot; control.predictor = control.predictor, 
+##    control.family = control.family, &quot;, &quot; control.inla = control.inla, 
+##    control.fixed = control.fixed, &quot;, &quot; control.mode = control.mode, 
+##    control.expert = control.expert, &quot;, &quot; control.hazard = control.hazard, 
+##    control.lincomb = control.lincomb, &quot;, &quot; control.update = 
+##    control.update, control.lp.scale = control.lp.scale, &quot;, &quot; 
+##    control.pardiso = control.pardiso, only.hyperparam = only.hyperparam, 
+##    &quot;, &quot; inla.call = inla.call, inla.arg = inla.arg, num.threads = 
+##    num.threads, &quot;, &quot; blas.num.threads = blas.num.threads, keep = keep, 
+##    working.directory = working.directory, &quot;, &quot; silent = silent, inla.mode 
+##    = inla.mode, safe = FALSE, debug = debug, &quot;, &quot; .parent.frame = 
+##    .parent.frame)&quot;) 
+## Time used:
+##     Pre = 5.04, Running = 4.19, Post = 0.0531, Total = 9.28 
+## Fixed effects:
+##               mean    sd 0.025quant 0.5quant 0.975quant mode kld
+## (Intercept) 39.756 6.838     26.297   39.728     53.363   NA   0
+## cofactor     5.178 0.137      4.911    5.178      5.447   NA   0
+## 
+## Random effects:
+##   Name     Model
+##     phylo_id Generic0 model
+## 
+## Model hyperparameters:
+##                                          mean    sd 0.025quant 0.5quant
+## Precision for the Gaussian observations 0.012 0.002      0.009    0.012
+## Precision for phylo_id                  0.006 0.002      0.003    0.005
+##                                         0.975quant mode
+## Precision for the Gaussian observations      0.016   NA
+## Precision for phylo_id                       0.010   NA
+## 
+## Marginal log-Likelihood:  -1009.18 
+##  is computed 
+## Posterior summaries for the linear predictor and the fitted values are computed
+## (Posterior marginals needs also &#39;control.compute=list(return.marginals.predictor=TRUE)&#39;)</code></pre>
+<p>INLA prints two main areas of output we are interested in: <code>Fixed effects</code> (titled <code>Populations-Level Effects</code> in BRMS output) and <code>Model hyperparameters</code> (<code>Group-Level Effects</code>). The hyperparameters for random effects in INLA are precision estimates, as opposed to variance estimates in BRMS. So, they are not directly comparable. Fortunately, precision estimates are easily converted to the more intuitive variance estimates using the formula <span class="math inline">\(\sqrt(1 / \tau)\)</span>. Pagel’s Lambda is simply calcualted by Bürkner as (variance explained by phylogeny / total variation). Let’s compare the Pagel’s Lambda estimates for the INLA and BRMS models.</p>
+<p>After this conversion, we see that INLA estimates a slightly smaller phylogenetic effect than BRMS does.</p>
+<pre class="r"><code># INLA
+posterior_sample = inla.hyperpar.sample(4000, model_simple_inla) # 4000 samples to match BRMS default
+lambda = (1 / posterior_sample[,2]) / (rowSums(1 / posterior_sample))
+summary(lambda)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##  0.2320  0.6235  0.6885  0.6783  0.7417  0.9070</code></pre>
+<pre class="r"><code># BRMS output
+hyp &lt;- &quot;sd_phylo__Intercept^2 / (sd_phylo__Intercept^2 + sigma^2) = 0&quot;
+hyp &lt;- hypothesis(model_simple_brms, hyp, class = NULL)
+summary(hyp$samples[,1])</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##  0.2516  0.6527  0.7082  0.7015  0.7621  0.9007</code></pre>
+<pre class="r"><code>plot_df = data.frame(inla = lambda,
+                     brms = c(hyp$samples[,1]),
+                     iter = 1:4000)
+
+ggplot() + 
+  geom_density(data = plot_df, aes(inla), fill = &quot;red&quot;, alpha = 0.3) + 
+  geom_density(data = plot_df, aes(brms), fill = &quot;blue&quot;, alpha = 0.3) +
+  xlab(&quot;Phylogenetic signal&quot;)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-5-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>The INLA model performs quite well using default priors, with similar estimates, but slightly higher error. One of the more attractive aspects of INLA is the introduction of <a href="https://becarioprecario.bitbucket.io/inla-gitbook/ch-priors.html#sec:pcpriors">penalizing complexity priors</a>. The basic idea behind penalizing complexity priors is that we should prefer a simpler model, until there is enough support for a more complex model. A change in prior reduces the mean difference between the BRMS model and INLA model to &lt;0.001.</p>
+<pre class="r"><code>pcprior = list(prec = list(
+  prior=&quot;pc.prec&quot;,
+  param = c(20, 0.1)) 
+)
+
+model_pcprior_inla = inla(phen ~ cofactor +
+                    f(phylo_id,
+                      model = &quot;generic0&quot;,
+                      Cmatrix = phylo_prec_mat,
+                      hyper = pcprior),
+                  data = data_simple,
+                  control.compute=list(config = TRUE))
+
+# INLA
+posterior_sample = inla.hyperpar.sample(4000, model_pcprior_inla) # 4000 samples to match BRMS default
+lambda.pc = (1 / posterior_sample[,2]) / (rowSums(1 / posterior_sample))
+
+plot_df$inla.pc = lambda.pc
+
+summary(plot_df[,c(1:2,4)])</code></pre>
+<pre><code>##       inla             brms           inla.pc      
+##  Min.   :0.2320   Min.   :0.2516   Min.   :0.3448  
+##  1st Qu.:0.6235   1st Qu.:0.6527   1st Qu.:0.6472  
+##  Median :0.6885   Median :0.7082   Median :0.7081  
+##  Mean   :0.6783   Mean   :0.7015   Mean   :0.6984  
+##  3rd Qu.:0.7417   3rd Qu.:0.7621   3rd Qu.:0.7583  
+##  Max.   :0.9070   Max.   :0.9007   Max.   :0.9092</code></pre>
+<pre class="r"><code>ggplot() + 
+  geom_density(data = plot_df, aes(inla), fill = &quot;red&quot;, alpha = 0.3) + 
+  geom_density(data = plot_df, aes(inla.pc), fill = &quot;yellow&quot;, alpha = 0.3) +
+  geom_density(data = plot_df, aes(brms), fill = &quot;blue&quot;, alpha = 0.3) +
+  xlab(&quot;Phylogenetic signal&quot;)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" /></p>
+<div id="a-phylogenetic-model-with-repeated-measurements" class="section level2">
+<h2>A Phylogenetic model with Repeated Measurements</h2>
+<p>Bürkner also presents an example for modelling phylogenetic signal when there are multiple samples per taxa in the phylogeny. Again I quote the original article, and show the INLA formulation alongside the BRMS formulation. The organising of the precision matrix for this model is much the same as above, so I will brush over this part here.</p>
+<blockquote>
+<p>Often, we have multiple observations per species and this allows to fit more complicated phylogenetic models.</p>
+</blockquote>
+<pre class="r"><code>data_repeat &lt;- read.table(
+  &quot;https://paul-buerkner.github.io/data/data_repeat.txt&quot;,
+  header = TRUE
+)
+
+data_repeat$spec_mean_cf &lt;-
+  with(data_repeat, sapply(split(cofactor, phylo), mean)[phylo])
+head(data_repeat)</code></pre>
+<pre><code>##        phen  cofactor species phylo spec_mean_cf
+## 1 107.41919 11.223724    sp_1  sp_1    10.309588
+## 2 109.16403  9.805934    sp_1  sp_1    10.309588
+## 3  91.88672 10.308423    sp_1  sp_1    10.309588
+## 4 121.54341  8.355349    sp_1  sp_1    10.309588
+## 5 105.31638 11.854510    sp_1  sp_1    10.309588
+## 6  64.99859  4.314015    sp_2  sp_2     3.673914</code></pre>
+<pre class="r"><code># recreate phylo id variable
+data_repeat$phylo_id_rep &lt;- match(data_repeat$phylo, rownames(phylo_prec_mat))
+data_repeat$species_id = data_repeat$phylo_id_rep</code></pre>
+<blockquote>
+<p>The variable spec_mean_cf just contains the mean of the cofactor for each species. The code for the repeated measurement phylogenetic model looks as follows:</p>
+</blockquote>
+<blockquote>
+<p>The variables phylo and species are identical as they are both identifiers of the species. However, we model the phylogenetic covariance only for phylo and thus the species variable accounts for any specific effect that would be independent of the phylogenetic relationship between species (e.g., environmental or niche effects). Again we can obtain model summaries as well as estimates of the phylogenetic signal.</p>
+</blockquote>
+<pre class="r"><code># INLA
+model_inla_repeat1 = inla(
+  phen ~ spec_mean_cf + 
+    f(phylo_id_rep,
+      model = &quot;generic0&quot;,
+      Cmatrix = phylo_prec_mat,
+      hyper = pcprior) + # include pc.prior
+    f(species,
+      model = &quot;iid&quot;),
+  data = data_repeat
+)
+
+# BRMS
+model_brms_repeat1 &lt;- brm(
+  phen ~ spec_mean_cf + (1|gr(phylo, cov = A)) + (1|species),
+  data = data_repeat,
+  family = gaussian(),
+  data2 = list(A = A),
+  prior = c(
+    prior(normal(0,10), &quot;b&quot;),
+    prior(normal(0,50), &quot;Intercept&quot;),
+    prior(student_t(3,0,20), &quot;sd&quot;),
+    prior(student_t(3,0,20), &quot;sigma&quot;)
+  ),
+  sample_prior = TRUE, chains = 2, cores = 2,
+  iter = 4000, warmup = 1000
+)</code></pre>
+<pre class="r"><code># INLA
+posterior_sample = inla.hyperpar.sample(6000, model_inla_repeat1) # 6000 samples to match BRMS default
+lambda = (1 / posterior_sample[,2]) / (rowSums(1 / posterior_sample))
+summary(lambda)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##  0.5401  0.7293  0.7653  0.7612  0.7973  0.8957</code></pre>
+<pre class="r"><code># BRMS output
+hyp &lt;- paste(&quot;sd_phylo__Intercept^2 /&quot;, &quot;(sd_phylo__Intercept^2 + sd_species__Intercept^2 + sigma^2) = 0&quot;)
+hyp &lt;- hypothesis(model_brms_repeat1, hyp, class = NULL)
+summary(hyp$samples[,1])</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##  0.4650  0.7051  0.7437  0.7401  0.7800  0.8900</code></pre>
+<pre class="r"><code>plot_df = data.frame(inla = lambda,
+                     brms = c(hyp$samples[,1]))
+
+summary(plot_df)</code></pre>
+<pre><code>##       inla             brms       
+##  Min.   :0.5401   Min.   :0.4650  
+##  1st Qu.:0.7293   1st Qu.:0.7051  
+##  Median :0.7653   Median :0.7437  
+##  Mean   :0.7612   Mean   :0.7401  
+##  3rd Qu.:0.7973   3rd Qu.:0.7800  
+##  Max.   :0.8957   Max.   :0.8900</code></pre>
+<pre class="r"><code>ggplot() + 
+  geom_density(data = plot_df, aes(inla), fill = &quot;red&quot;, alpha = 0.3) + 
+  geom_density(data = plot_df, aes(brms), fill = &quot;blue&quot;, alpha = 0.3) +
+  xlab(&quot;Phylogenetic signal&quot;)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-9-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+</div>
