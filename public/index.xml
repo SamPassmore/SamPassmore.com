@@ -6,7 +6,6 @@
     <description>Recent content on Dr Sam Passmore</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-<<<<<<< HEAD
     <lastBuildDate>Tue, 29 Nov 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://www.sampassmore.com/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>The Global Jukebox</title>
@@ -24,8 +23,8 @@
       
       <guid>https://www.sampassmore.com/post/2022-10-11-funding-in-australia-and-new-zealand/</guid>
       <description>To keep track of the various funding opportunities available to me and that I am interested in, I have created this blog page.</description>
-=======
-    <lastBuildDate>Fri, 15 Jul 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://www.sampassmore.com/index.xml" rel="self" type="application/rss+xml" />
+    </item>
+    
     <item>
       <title>Phylogenetic Signal in INLA</title>
       <link>https://www.sampassmore.com/post/2022-07-15-phylogenetic-signal-in-inla/</link>
@@ -33,7 +32,6 @@
       
       <guid>https://www.sampassmore.com/post/2022-07-15-phylogenetic-signal-in-inla/</guid>
       <description>Phylogenetic signal in INLA Recently, my research has been focused on quantifying the patterns of similarity we observe within a particular linguistic or cultural trait, also known as autocorrelation.</description>
->>>>>>> inla
     </item>
     
     <item>
