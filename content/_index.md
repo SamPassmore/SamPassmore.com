@@ -8,7 +8,9 @@ I use quantitative methods to explore the cultural diversity observed around the
 
 Currently, I’m a Research Fellow in the [Evolution of Cultural Diversity Initiative](https://evolutionofculturaldiversity.anu.edu.au/), at the Australian National University, led by Nick Evans. Previously, I was a postdoctoral researcher with Pat Savage's [CompMusic Lab](https://sites.google.com/view/comp-music-lab/home) at Keio University in Japan (CompMusic is for comparative and computational approaches to the study of music). I finished my PhD in 2021 at the University of Bristol as a member of Fiona Jordan’s [VariKin](https://excd.org/research-activities/#varikin) project studying the evolution of kinship and kinship terminology (Varikin is for Variance in Kinship). Earlier in my career, I studied and worked for Quentin Atkinson at the University of Auckland - the city where I grew up. Outside of academia, I have worked as a Data Scientist at [Pingar International](https://www.pingar.com/).
 
-I am a keen R programmer, and an interest in data management. 
+I have published articles in _Current Biology, Cognition, Biological Theory_, and _Religion, Brain, and Behaviour_. I have written reviews for journals such as: _American Anthropologist, Diachronica, Evolution and Human Behaviour_, and _Frontiers Psychology_. 
+
+I am a keen R programmer, with an interest in data management. 
 
 If there’s something I can help with - don’t hesitate to contact me!
 
