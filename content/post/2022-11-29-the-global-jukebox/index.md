@@ -38,6 +38,8 @@ The press release was also picked up by various English, German, and Spanish med
 * [Phys.org: "Global Jukebox" performing arts database now publicly available](https://phys.org/news/2022-11-global-jukebox-arts-database-publicly.html)
 * [Deutschlandfunk Nova: Globale Jukebox mit Tausenden traditionellen Liedern](https://www.deutschlandfunknova.de/nachrichten/globale-jukebox-datenbank-mit-tausenden-traditionellen-liedern-erstellt)
 * [La Razon: La rockola del planeta: permite escuchar canciones de más de 1.000 culturas](https://www.larazon.es/tecnologia/20221102/dgn7icuf2jf5ln72oywgk5zawa.html)
+* * [National Endowment for the Arts: Classifying Songs and Societies to Promote Cultural Equity—Can It Be Done?](https://www.arts.gov/stories/blog/2023/classifying-songs-and-societies-promote-cultural-equity-can-it-be-done)
+
 
 # Earlier Coverage
 
