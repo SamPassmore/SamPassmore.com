@@ -11,7 +11,60 @@ Categories: []
 DisableComments: no
 ---
 
-```{r}
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE, fig.align = 'center') 
+set.seed(123)
+```
 
+
+A common task in phylogenetics is ancestral state reconstruction. There are a number of tools to do this inside and outside R. Some noteable R examples are: using [ape](http://ape-package.ird.fr/) (which I will use for comparison today), and [phytools](http://www.phytools.org/Rbook/), which are both frequentist implementations. Bayesian implementations are available using [BayesTraits](http://www.evolution.reading.ac.uk/BayesTraitsV4.0.0/BayesTraitsV4.0.0.html). This post shows how to implement a Bayesian ancestral state reconstruction approach using the R modelling package INLA. 
+
+```{r}
+library(ape)
+
+n = 100
+sim.tree = rcoal(n = n)
+y = rTraitCont(phy = sim.tree, root.value = 5)
+
+anc = ace(y, sim.tree)
+anc$ace[1]
+anc$CI95[1,]
+```
+
+```{r}
+library(INLA)
+library(stringr)
+
+model_df = data.frame(label = names(y), y = y)
+
+# precision matrix
+prec_mat = MCMCglmm::inverseA(sim.tree,
+                   nodes = "ALL",
+                   scale = FALSE)$Ainv
+
+# add in node data
+node_idx = str_detect(rownames(prec_mat), "Node")
+node_df = data.frame(label = rownames(prec_mat)[node_idx], 
+                     y = NA)
+
+model_df = rbind(model_df, node_df)
+
+model_df$phylo_id = match(model_df$label, rownames(prec_mat))
+
+
+pcprior = list(prec = list(
+ prior="pc.prec",
+ param = c(1, 0.1)) # This prior suggests that the probability that variance for the random effect is greater than 1 is 10%
+)
+
+fit = inla(y ~ f(phylo_id,
+                 model = "generic0",
+                 Cmatrix = prec_mat,
+                 hyper = pcprior), 
+           data = model_df, 
+           control.predictor=list(link = 1, compute = TRUE)
+           )
+
+fit$summary.fitted.values[101,]
 ```
 
