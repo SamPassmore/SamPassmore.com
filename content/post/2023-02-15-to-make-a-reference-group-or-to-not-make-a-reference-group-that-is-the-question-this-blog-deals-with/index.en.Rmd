@@ -63,7 +63,7 @@ ratios
 ratios[2] / ratios[1]
 ```
 
-To see if the model is estimating correctly, we compare the true ratios above, to the model coefficients. The first model should show the ratio of the baseline society as the intercept, society A = 4, and difference in ratios between groups as the coefficient. The second should return the ratios within each society, 4 for society A, and 0.25 for society B. 
+To see if the model is estimating correctly, we compare the true ratios above, to the model coefficients. The first model should show the ratio of the baseline society as the intercept, society A = 4, and difference in ratios between groups as the coefficient. The second should return the ratios within each society, 4 for society A, and 0.25 for society B. That is, 4 / 0.25 = 0.0625. 
 
 ```{r}
 ### Model Estimates of the ratios 
@@ -77,7 +77,11 @@ exp(coef(fit.1)[1] + coef(fit.1)[2])
 
 # Difference between Group A and Group B 
 exp(coef(fit.1)[2]) 
+```
 
+The model with no intercept returns the estimated ratios for each society. 
+
+```{r}
 # Ratios within each group
 exp(coef(fit.2))
 ```
