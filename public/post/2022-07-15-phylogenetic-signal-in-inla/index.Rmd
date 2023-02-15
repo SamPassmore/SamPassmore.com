@@ -1,7 +1,7 @@
 ---
 title: "Phylogenetic Signal in INLA"
 author: "R package build"
-date: "2022-07-15"
+date: "2023-01-19"
 output: pdf_document
 categories: []
 tags: []
@@ -14,6 +14,7 @@ slug: []
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(warning = FALSE, message = FALSE, fig.align = 'center') 
+set.seed(123)
 ```
 
 # Phylogenetic signal in INLA
@@ -128,7 +129,7 @@ ggplot() +
 
 ```
 
-The INLA model performs quite well using default priors, with similar estimates, but slightly higher error. One of the more attractive aspects of INLA is the introduction of [penalizing complexity priors](https://becarioprecario.bitbucket.io/inla-gitbook/ch-priors.html#sec:pcpriors). The basic idea behind penalizing complexity priors is that we should prefer a simpler model, until there is enough support for a more complex model. A change in prior reduces the mean difference between the BRMS model and INLA model to <0.001. 
+The INLA model performs quite well using default priors, with similar estimates, but slightly higher error. One of the more attractive aspects of INLA is the introduction of [penalizing complexity priors](https://becarioprecario.bitbucket.io/inla-gitbook/ch-priors.html#sec:pcpriors). The basic idea behind penalizing complexity priors is that we should prefer a simpler model, until there is enough support for a more complex model. A change in prior results in a very small difference between the INLA and BRMS estimates for phylogenetic signal. 
 
 ```{r}
 pcprior = list(prec = list(

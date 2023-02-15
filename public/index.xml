@@ -6,7 +6,16 @@
     <description>Recent content on Dr Sam Passmore</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Tue, 29 Nov 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://www.sampassmore.com/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 19 Jan 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://www.sampassmore.com/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Phylogenetic Signal in INLA</title>
+      <link>https://www.sampassmore.com/post/2022-07-15-phylogenetic-signal-in-inla/</link>
+      <pubDate>Thu, 19 Jan 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.sampassmore.com/post/2022-07-15-phylogenetic-signal-in-inla/</guid>
+      <description>Phylogenetic signal in INLA Recently, my research has been focused on quantifying the patterns of similarity we observe within a particular linguistic or cultural trait, also known as autocorrelation.</description>
+    </item>
+    
     <item>
       <title>The Global Jukebox</title>
       <link>https://www.sampassmore.com/post/2022-11-29-the-global-jukebox/</link>
@@ -23,15 +32,6 @@
       
       <guid>https://www.sampassmore.com/post/2022-10-11-funding-in-australia-and-new-zealand/</guid>
       <description>To keep track of the various funding opportunities available to me and that I am interested in, I have created this blog page.</description>
-    </item>
-    
-    <item>
-      <title>Phylogenetic Signal in INLA</title>
-      <link>https://www.sampassmore.com/post/2022-07-15-phylogenetic-signal-in-inla/</link>
-      <pubDate>Fri, 15 Jul 2022 00:00:00 +0000</pubDate>
-      
-      <guid>https://www.sampassmore.com/post/2022-07-15-phylogenetic-signal-in-inla/</guid>
-      <description>Phylogenetic signal in INLA Recently, my research has been focused on quantifying the patterns of similarity we observe within a particular linguistic or cultural trait, also known as autocorrelation.</description>
     </item>
     
     <item>
@@ -148,7 +148,7 @@
       <pubDate>Thu, 28 Feb 2019 00:00:00 +0000</pubDate>
       
       <guid>https://www.sampassmore.com/about/</guid>
-      <description>Hi! I’m Sam Passmore. I’m a Postdoctoral researcher with Pat Savage&amp;rsquo;s CompMusic Lab (CompMusic is for comparative and computational approaches to the study of music) at Keio University in Japan.</description>
+      <description></description>
     </item>
     
     <item>
