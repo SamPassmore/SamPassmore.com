@@ -2,6 +2,12 @@
 title: Ancestral state reconstruction with INLA
 author: Sam Passmore
 date: '2023-03-03'
+slug: []
+categories: []
+tags: []
+Description: ''
+Tags: []
+Categories: []
 DisableComments: no
 ---
 
@@ -106,7 +112,6 @@ text(x = unlist(fit$summary.fitted.values[101,1]) - 0.1, y = 0.2, label = "INLA 
 abline(v = anc$ace[1], lty = "dotdash", lwd = 2, col = "red")
 text(x = anc$ace[1] - 0.1, y = 0.2, label = "ape::ace Estimate", srt = 90)
 abline(v = anc$CI95[1,], lty = "dashed", col = "red")
-text(x = anc$CI95[1,] - 0.1, y = 0.2, label = "ape::ace 95% CI", srt = 90)
 ```
 
 The graph above exemplifies the difference in error and provides a clear visualization of the INLA model's prediction. From here, we could tweak priors to try and improve the estimate and errors of the model. 

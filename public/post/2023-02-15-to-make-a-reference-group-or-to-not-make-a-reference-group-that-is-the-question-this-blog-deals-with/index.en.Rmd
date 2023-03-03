@@ -12,13 +12,12 @@ Categories: []
 DisableComments: no
 ---
 
-```{r}
+```{r setup, include=FALSE}
 knitr::opts_chunk$set(warning = FALSE, message = FALSE, fig.align = 'center') 
 set.seed(123)
 ```
 
-
-When modelling a single categorical variable in linear regression, there are two possibilities. Most commonly, and the default in R, is to estimate the difference between each level of the categorical variable relative to one reference (or baseline) level. This is called reference level coding. The less common alternative is to model each category separately, without a baseline, called level means coding. The choice between these two depends on what hypothesis you want to test, and changes the interpretation of p-values. But first, lets understand the difference in what the model coefficients estimate. 
+When modelling a single categorical variable in linear regression, there are two possibilities. Most commonly, and the default in R, is to estimate the difference between each level of the categorical variable relative to one reference (or baseline) level. This is called reference level coding. The less common alternative is to model each category separately, without a baseline, called level means coding. The choice between these two depends on what hypothesis you want to test, and changes the interpretation of coefficients and p-values. But first, lets understand the difference in what the model coefficients estimate. 
 
 To illustrate this example, imagine we have two societies of people who are known for their musical performance. One society, which we will call society A, is known for their preference for singing together, or group singing. As an example of group singing, we might think of the grand and unified choruses [found in Samoa](https://theglobaljukebox.org/#?share=Samoa_Female-and-Male-Chorus-Sing-Modern-Melody). 
 
@@ -64,7 +63,7 @@ ratios
 ratios[2] / ratios[1]
 ```
 
-To see if the model is estimating correctly, we compare the true ratios above, to the model coefficients. The first model should show the ratio of the baseline society as the intercept, society A = 4, and difference in ratios between groups as the coefficient. The second should return the ratios within each society, 4 for society A, and 0.25 for society B. 
+To see if the model is estimating correctly, we compare the true ratios above, to the model coefficients. The first model should show the ratio of the baseline society as the intercept, society A = 4, and difference in ratios between groups as the coefficient. The second should return the ratios within each society, 4 for society A, and 0.25 for society B. That is, 4 / 0.25 = 0.0625. 
 
 ```{r}
 ### Model Estimates of the ratios 
@@ -78,7 +77,11 @@ exp(coef(fit.1)[1] + coef(fit.1)[2])
 
 # Difference between Group A and Group B 
 exp(coef(fit.1)[2]) 
+```
 
+The model with no intercept returns the estimated ratios for each society. 
+
+```{r}
 # Ratios within each group
 exp(coef(fit.2))
 ```

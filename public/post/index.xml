@@ -6,7 +6,16 @@
     <description>Recent content in Posts on Dr Sam Passmore</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Thu, 19 Jan 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://www.sampassmore.com/post/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 15 Feb 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://www.sampassmore.com/post/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>To make a reference group, or to not make a reference group, that is the question this blog deals with. </title>
+      <link>https://www.sampassmore.com/post/2023-02-15-to-make-a-reference-group-or-to-not-make-a-reference-group-that-is-the-question-this-blog-deals-with/</link>
+      <pubDate>Wed, 15 Feb 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.sampassmore.com/post/2023-02-15-to-make-a-reference-group-or-to-not-make-a-reference-group-that-is-the-question-this-blog-deals-with/</guid>
+      <description>When modelling a single categorical variable in linear regression, there are two possibilities.</description>
+    </item>
+    
     <item>
       <title>Phylogenetic Signal in INLA</title>
       <link>https://www.sampassmore.com/post/2022-07-15-phylogenetic-signal-in-inla/</link>

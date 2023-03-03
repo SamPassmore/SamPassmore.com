@@ -1,15 +1,84 @@
 ---
 title: Ancestral state reconstruction with INLA
-author: R package build
-date: '2023-02-10'
-slug: []
-categories: []
-tags: []
-Description: ''
-Tags: []
-Categories: []
+author: Sam Passmore
+date: '2023-03-03'
 DisableComments: no
 ---
 
 
 
+<p>A common task in phylogenetics is ancestral state reconstruction. There are a number of tools to do this inside and outside R. Some noteable R examples are: using <a href="http://ape-package.ird.fr/">ape</a> (which I will use for comparison today), and <a href="http://www.phytools.org/Rbook/">phytools</a>, which are both frequentist implementations. Bayesian implementations are available using <a href="http://www.evolution.reading.ac.uk/BayesTraitsV4.0.0/BayesTraitsV4.0.0.html">BayesTraits</a>. This post shows how to implement a Bayesian ancestral state reconstruction approach using the R modelling package INLA. As with my previous INLA post, the process is a result of discussions with <a href="https://twitter.com/ecologician">Russell Dinnage</a>, and any mistakes are surely introduced by me.</p>
+<p>For starters. I first simulate a simple ancestral state result using ape, where the ancestral state of the phylogeny is 5:</p>
+<pre class="r"><code>library(ape)
+
+# Simulate a tree for n taxa. 
+n = 100 
+sim.tree = rcoal(n = n)
+
+# Simulate a continuous trait along that tree, where the ancestral state is 5
+# With a standard deviation of 1.5 (sigma)
+y = rTraitCont(phy = sim.tree, root.value = 5, sigma = 1.5)
+
+# Calculate the ancestral state
+anc = ace(y, sim.tree)
+cat(&quot;The ancestral state is estimated to be:&quot;, round(anc$ace[1], 2), &quot;\n&quot;,
+    &quot;With a 95% CI of:&quot;, round(anc$CI95[1,], 3))</code></pre>
+<pre><code>## The ancestral state is estimated to be: 4.38 
+##  With a 95% CI of: 2.466 6.297</code></pre>
+<p>The default ancestral state model is Brownian motion, and it does a pretty good job at estimating our known ancestral state of 5. This coding procedure is pretty simple, and to code the same results in INLA is quite complicated, so you may ask why we need something more complicated, which I will discuss at the end.</p>
+<p>Next, we code the same model up using INLA, which requires a small amount of data wrangling:</p>
+<pre class="r"><code>library(INLA)
+library(stringr)
+
+# INLA requires the data as a dataframe. 
+model_df = data.frame(label = names(y), y = y)</code></pre>
+<p>As discussed in my previous INLA post, INLA requires a precision matrix. In this instance, I use <code>nodes = "ALL"</code> rather than <code>nodes = "TIPS"</code>. This means we include the relationships between all taxa and all nodes. We will use the information between nodes in the phylogeny to reconstruct our ancestral state.</p>
+<pre class="r"><code># INLA also requires the relationships between data to be 
+# precision matrix
+prec_mat = MCMCglmm::inverseA(sim.tree,
+                   nodes = &quot;ALL&quot;,
+                   scale = FALSE)$Ainv</code></pre>
+<p>As with many regression based functions, we will introduce the data we want to reconstruct using a dataframe. In the case of reconstruction, we will not only include rows in the dataframe for each observed datapoint (in this case extant taxa), but also for the unobserved points we want to reconstruct (the internal nodes and root of the phylogeny). The unknown data will be respresented with missing / NA values. In the next block of code I also create an index to match the rows of the dataframe to the rows of the precision matrix.</p>
+<pre class="r"><code># add in node data
+node_idx = str_detect(rownames(prec_mat), &quot;Node&quot;)
+node_df = data.frame(label = rownames(prec_mat)[node_idx], 
+                     y = NA)
+
+model_df = rbind(model_df, node_df)
+
+# Create matching index
+model_df$phylo_id = match(model_df$label, rownames(prec_mat))</code></pre>
+<p>Now it is time to put it all together to calculate the ancestral states. To learn more about the construction of INLA models see <a href="/post/2022-07-15-phylogenetic-signal-in-inla">my earlier post</a>, or go to <a href="https://www.r-inla.org/">the INLA webpage</a>. A new argument in this this model is <code>control.predictor=list(compute=TRUE)</code>. This tells the model to predict the values which are missing in the response. In our case, there are the internal nodes.</p>
+<pre class="r"><code>fit = inla(y ~ f(phylo_id,
+                 model = &quot;generic0&quot;,
+                 Cmatrix = prec_mat), 
+           data = model_df, 
+           control.predictor=list(compute = TRUE),
+           control.compute=list(config = TRUE)
+           )
+
+
+cat(&quot;The ancestral state is estimated to be:&quot;, round(fit$summary.fitted.values[101,1], 2), &quot;\n&quot;,
+    &quot;With a 95% CI of:&quot;, unlist(round(fit$summary.fitted.values[101,c(3,5)], 3)))</code></pre>
+<pre><code>## The ancestral state is estimated to be: 5.39 
+##  With a 95% CI of: 4.222 6.552</code></pre>
+<p>Recall that the <code>ape::ace</code> function estimated the mean to be 4.38 (95% CI: 2.47 - 6.3). Both approaches are close to the ancestral state (5), but INLA is closer and providing a narrower confidence interval. Comparatively, the INLA approach is more fiddly, but is providing us with less error, so there is some reward for the time, however there are two more benefits worth looking at. The first benefit is that INLA is a Bayesian approach, and being a Bayesian approach means we can also plot the posterior predictive distribution of the results, providing a clearer view of the error distribution:</p>
+<pre class="r"><code>post = INLA::inla.posterior.sample(1000, fit)
+anc.post = lapply(post, function(p) p$latent[101]) %&gt;% 
+  unlist()
+
+plot(density(anc.post), main = &quot;Posterior distribution of Ancestral State estimates&quot;,
+     xlab = &quot;Ancestral state Estimate&quot;, col = &quot;blue&quot;, 
+     xlim = range(y))
+abline(v = 5, lty = &quot;longdash&quot;, lwd = 2, col = &quot;black&quot;)
+text(x = 4.9, y = 0.2, label = &quot;True Ancestral State&quot;, srt = 90)
+abline(v = unlist(fit$summary.fitted.values[101,1]), lty = &quot;dotdash&quot;, lwd = 2, col = &quot;blue&quot;)
+text(x = unlist(fit$summary.fitted.values[101,1]) - 0.1, y = 0.2, label = &quot;INLA Estimate&quot;, srt = 90)
+# abline(v = unlist(fit$summary.fitted.values[101,c(3,5)]), lty = &quot;dashed&quot;, col = &quot;blue&quot;)
+abline(v = anc$ace[1], lty = &quot;dotdash&quot;, lwd = 2, col = &quot;red&quot;)
+text(x = anc$ace[1] - 0.1, y = 0.2, label = &quot;ape::ace Estimate&quot;, srt = 90)
+abline(v = anc$CI95[1,], lty = &quot;dashed&quot;, col = &quot;red&quot;)
+text(x = anc$CI95[1,] - 0.1, y = 0.2, label = &quot;ape::ace 95% CI&quot;, srt = 90)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>The graph above exemplifies the difference in error and provides a clear visualization of the INLA model’s prediction. From here, we could tweak priors to try and improve the estimate and errors of the model.</p>
+<p>A second advantage of the INLA approach is that we can accomodate other factors into the model that we think might influence the ancestral state other than the phylogenetic history. For example, environmental factors may influence the current state of traits. I may extend this example in the future to accommodate such a possibility.</p>
