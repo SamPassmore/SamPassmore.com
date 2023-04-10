@@ -1,0 +1,57 @@
+---
+title: Treelikeness and Data types
+author: Sam Passmore    
+date: '2023-03-09'
+slug: []
+categories: []
+tags: []
+Description: ''
+Tags: []
+Categories: []
+DisableComments: no
+---
+
+```{r setup, include=FALSE} 
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
+```
+
+An assumption of phylogenetic models is that the data used to build the model has some kind of tree-like structure.
+It does not necessarily be the case that the data follows a perfect tree-like structure, there are many instances why in biological and cultural models of history that is not the case. But if the data strays too far from the hierarchical assumption imposed by phylogenetic methods we are at risk of bad inferences. 
+
+One way to test whether the shape of our data is tree-like is through the _four-point condition_. The four-point condition says that, given four taxa have come from a tree (x, y, u, and v), the distances between those points must satisfy the following formula:
+
+d(x, y) + d(u, v) <= max{d(x, u) + d(y, v), d(x, v) + d(y, u)}
+
+That is, the summed distance between x and y (x-y) and between u-v, must be less than the summed distance between x-u and y-v, or the summed distance between x-v and y-u. There are two common statistics for operationalising how close a particular dataset is to the four-point condition called delta scores and Q-residuals. If you want to read more about this concept or statistics I would recommend reading [Holland et al. (2002)](https://doi.org/10.1093/oxfordjournals.molbev.a004030) or [Gray et al. (2010)](https://royalsocietypublishing-org.bris.idm.oclc.org/doi/10.1098/rstb.2010.0162).  
+
+The question this post is interested in is whether the type of distance used influences our inference of treelikeness in the data. Most linguistic and genetic data are presence/absence data, but in many sciences measurements can be continuous. For presence/absence data distances are often calculated using hamming distances, but continuous measures often use Euclidean distance. So, if we simulate data presence/absence data and continuous data from the same phylogenetic tree, will the delta scores offer the same or similar inference? 
+
+First lets build a tree
+
+```{r warnings = false}
+library(ape)
+
+n_taxa = 30
+tree = rcoal(n_taxa)
+
+plot(tree, font = 2)
+```
+
+This tree will serve as the base truth from which we can simulate data from. I will simulate two types of data: binary and continuous. I will simulate ten traits for each process. 
+
+```{r}
+
+n_traits = 10
+continuous  = sapply(1:n_traits, function(x) rTraitCont(tree, model = matrix(c(0, 0.1, 0.1, 0), 2)))
+binary      = sapply(1:n_traits, function(x) rTraitDisc(tree, states = 0:1, model = matrix(c(0, 0.1, 0.1, 0), 2)))
+
+```
+
+
+
+
+
+
+
+
+
