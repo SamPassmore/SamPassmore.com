@@ -57,12 +57,12 @@ menu:
       name: Publications
       url: /publications/
       weight: 400
-    - identifier: kinbank
-      name: Kinbank
-      params:
-        rel: external
-      url: www.kinbank.net
-      weight: 500
+    # - identifier: kinbank
+    #   name: Kinbank
+    #   params:
+    #     rel: external
+    #   url: www.kinbank.net
+    #   weight: 500
 taxonomies:
   series: series
 
