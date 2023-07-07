@@ -57,9 +57,9 @@ menu:
       name: Publications
       url: /publications/
       weight: 400
-    # - identifier: teaching
-    #   name: Teaching
-    #   url: /teaching/
+    # - identifier: kinbank
+    #   name: Kinbank
+    #   url: www.kinbank.net/
     #   weight: 500
 taxonomies:
   series: series
