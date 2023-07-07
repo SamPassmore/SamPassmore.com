@@ -11,7 +11,7 @@ Categories: []
 DisableComments: no
 ---
 
-I recently applied to the Cultural Evolution Society's Advancing Cultural Evolution (ACE) grant scheme. I narrowly missed out on the funding, [but was listed as an honorable mention.](https://culturalevolutionsociety.org/story/ACE_Awards_Report)
+I recently applied to the Cultural Evolution Society's Advancing Cultural Evolution (ACE) grant scheme. I narrowly missed out on the funding, [but was listed as an honourable mention.](https://culturalevolutionsociety.org/story/ACE_Awards_Report)
 
 For wider interest, I reproduced the project description I submitted below. If you are interested in helping progress this project - please get in touch. 
 
