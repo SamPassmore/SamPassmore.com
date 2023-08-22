@@ -21,5 +21,5 @@ The second project similarities in musical style can tell us anything about the 
 
 [Music, Math, and Language Workshop jointly hosted by Chosun University and Korea Institute for Advanced Study (Seoul, Korea)](https://sites.google.com/view/music-math-language/program?authuser=0)
 
-Below is a poster for my talk for the International Academic Communication Month on Computational Analysis of World Traditional Music, hosted by the Shandong College of Arts (Shandong, China).
+Below is a poster for my talk for the International Academic Communication Month on Computational Analysis of World Traditional Music, hosted by the Shandong College of Arts (Shandong, China)..
 ![](./image001.png)
