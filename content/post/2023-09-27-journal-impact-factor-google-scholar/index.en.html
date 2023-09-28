@@ -1,0 +1,146 @@
+---
+title: "Journal Impact Factor & Google Scholar"
+author: "Sam Passmore"
+date: '2023-09-27'
+slug: []
+categories: []
+tags: []
+Description: ''
+Tags: []
+Categories: []
+DisableComments: no
+---
+
+
+
+<p>I am currently writing a grant, and grant agencies are very interested in Journal Impact Factors (IF). Sometimes this might be explicit, but in this case I just want to flag the journals I have published in that are the most well known and IF seems to be a good indicator of this. I am not very interested in IF, and so I am not really sure which of my publications are in good places, and which of them are not. So, here is an attempt to automate figuring out which of my publications are in high impact factor places using a combination of Google Scholar and Journal Citation Reports (JCR).</p>
+<p>First, I can use the scholar package in R to download all my published articles. This will create a dataframe where each row is a paper, and there are some columns describing that paper, like the title, authors, and most importantly, the journal.</p>
+<pre class="r"><code>library(knitr)
+library(dplyr)
+library(scholar)
+
+# My scholar ID
+id = &#39;zrjq62QAAAAJ&#39;
+
+# Get my publications (a data frame)
+publications = get_publications(id)
+
+publications[,c(&quot;title&quot;, &quot;author&quot;, &quot;journal&quot;, &quot;year&quot;, &quot;cites&quot;)] %&gt;% 
+  head(.) %&gt;% 
+  kable(.)</code></pre>
+<table>
+<colgroup>
+<col width="46%" />
+<col width="33%" />
+<col width="14%" />
+<col width="2%" />
+<col width="2%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">title</th>
+<th align="left">author</th>
+<th align="left">journal</th>
+<th align="right">year</th>
+<th align="right">cites</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Sequence alignment of folk song melodies reveals cross-cultural regularities of musical evolution</td>
+<td align="left">PE Savage, S Passmore, G Chiba, TE Currie, H Suzuki, QD Atkinson</td>
+<td align="left">Current Biology</td>
+<td align="right">2022</td>
+<td align="right">35</td>
+</tr>
+<tr class="even">
+<td align="left">Shared cultural history as a predictor of political and economic changes among nation states</td>
+<td align="left">LJ Matthews, S Passmore, PM Richard, RD Gray, QD Atkinson</td>
+<td align="left">PloS one</td>
+<td align="right">2016</td>
+<td align="right">33</td>
+</tr>
+<tr class="odd">
+<td align="left">CHIELD: the causal hypotheses in evolutionary linguistics database</td>
+<td align="left">SG Roberts, A Killin, A Deb, C Sheard, SJ Greenhill, K Sinnemäki, …</td>
+<td align="left">Journal of Language Evolution</td>
+<td align="right">2020</td>
+<td align="right">27</td>
+</tr>
+<tr class="even">
+<td align="left">Cultural and environmental predictors of pre-European deforestation on Pacific Islands</td>
+<td align="left">QD Atkinson, T Coomber, S Passmore, SJ Greenhill, G Kushnick</td>
+<td align="left">PloS one</td>
+<td align="right">2016</td>
+<td align="right">26</td>
+</tr>
+<tr class="odd">
+<td align="left">No universals in the cultural evolution of kinship terminology</td>
+<td align="left">S Passmore, FM Jordan</td>
+<td align="left">Evolutionary Human Sciences</td>
+<td align="right">2020</td>
+<td align="right">24</td>
+</tr>
+<tr class="even">
+<td align="left">The Global Jukebox: A public database of performing arts and culture.</td>
+<td align="left">ALC Wood, KR Kirby, CR Ember, S Silbert, H Daikoku, J McBride, …</td>
+<td align="left">PLOS ONE</td>
+<td align="right">2022</td>
+<td align="right">21</td>
+</tr>
+</tbody>
+</table>
+<p>Then, I can also use a lesser known package called JCRImpactFactor, to cross-reference the journals I have published in with their Impact Factor as recorded in this package. This package only contains the Impact Factor values up to 2019, but that will do for my purposes.</p>
+<pre class="r"><code>library(JCRImpactFactor)
+
+# Find impact factors
+journals = find.IF.JCR(publications$journal, year = 2019) </code></pre>
+<pre><code>## [1] &quot;The following 11 journal(s) are not in JCR&quot;
+##  [1] &quot;Journal of Language Evolution&quot; &quot;Evolutionary Human Sciences&quot;  
+##  [3] &quot;Biological theory&quot;             &quot;arXiv preprint arXiv:&quot;        
+##  [5] &quot;PsyArXiv&quot;                      &quot;Religion, Brain &amp; Behavior&quot;   
+##  [7] &quot;University of Bristol&quot;         &quot;PsyArXiv&quot;                     
+##  [9] &quot;PsyArXiv&quot;                      &quot;OSF&quot;                          
+## [11] &quot;&quot;</code></pre>
+<pre class="r"><code># I have published in some journals more than once, so remove duplicates
+journals = journals[!duplicated(journals$Full.Journal.Title),]
+
+journals %&gt;% 
+  arrange(desc(IF2019)) %&gt;%
+  kable(., row.names = FALSE)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Full.Journal.Title</th>
+<th align="right">IF2019</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Science Advances</td>
+<td align="right">13.116</td>
+</tr>
+<tr class="even">
+<td align="left">CURRENT BIOLOGY</td>
+<td align="right">9.601</td>
+</tr>
+<tr class="odd">
+<td align="left">COGNITION</td>
+<td align="right">3.294</td>
+</tr>
+<tr class="even">
+<td align="left">PLoS One</td>
+<td align="right">2.740</td>
+</tr>
+<tr class="odd">
+<td align="left">Royal Society Open Science</td>
+<td align="right">2.647</td>
+</tr>
+<tr class="even">
+<td align="left">Topics in Cognitive Science</td>
+<td align="right">2.511</td>
+</tr>
+</tbody>
+</table>
+<p>It is worth noting that not all Journals have Impact factors recorded by JCR. Notably, this database contains no information on: The Journal of Language Evolution (IF = 2.25), Evolutionary Human Sciences (2.53), Biological Theory (1.14), or Religion, Brain, and Behavior (1.25).</p>
+<p>So, in the end it was relatively straightforward to automate, although it doesn’t give perfect results. If anyone knows of a more up-to-date location for Journal Impact Factors, let me know!</p>
