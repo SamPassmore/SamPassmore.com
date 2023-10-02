@@ -1,0 +1,121 @@
+---
+title: EPL, Favourites, and Gambling
+author: Package Build
+date: '2023-08-13'
+slug: []
+categories: []
+tags: []
+Description: ''
+Tags: []
+Categories: []
+DisableComments: no
+---
+
+I love watching football, and I love statistics, 
+
+I wondered how well bookies deal with simple season-long strategies. For example, if I bet $5 on the betting favourite for the whole season, would I make any money?  
+
+Fortunately, this data is readily available and I did not have to risk anything for this experiment. 
+
+```{r}
+suppressPackageStartupMessages({
+  library(stringr)
+  library(ggplot2)
+  library(dplyr)
+  library(lubridate)
+})
+
+results = read.csv("2223_EPL.csv")
+
+get_result = function(r, bet = 5){
+  # using sapply retains names
+  odds = sapply(r[c("B365H", "B365A")], as.numeric)
+  score = sapply(r[c("FTHG", "FTAG")], as.numeric) 
+  
+  # If odds are equal, this will favour the home team  
+  fav = str_extract(names(odds)[which.min(odds)], "[HA]")
+  win = r["FTR"]
+  # win = str_extract(names(score)[which.max(score)], "[HA]")
+  
+  
+  if(fav == win & fav == "H"){
+    returning_bet = (odds["B365H"] * bet) - bet
+  } 
+  if(fav == win & fav == "A"){
+    returning_bet = (odds["B365A"] * bet) - bet
+  } 
+  if(fav != win) {
+    returning_bet = -5
+  }
+  returning_bet
+}
+
+results$alwaysfav = apply(results, 1, get_result)
+results$alwaysfav_cumsum = cumsum(results$alwaysfav)
+
+ggplot(results, aes(x = dmy(Date), y = alwaysfav_cumsum)) + 
+  geom_line() + 
+  ggtitle("EPL 22/23 Season", "$5 on every favourite")
+
+```
+
+## Last 10 seasons
+
+Is this a one season wonder or, is this a regular pattern in the premier league? 
+```{r}
+
+csv_files = list.files(path = ".", "*.csv")
+all_results = lapply(csv_files, read.csv)
+names(all_results) = str_extract(csv_files, "[0-9]+")
+all_results = lapply(all_results, function(x){
+  season_dates = unique(x$Date)
+  seaons_days = data.frame(Date = season_dates, day_ofseason = 1:length(season_dates))
+  x = left_join(x, seaons_days, "Date")
+  x
+})
+all_results = bind_rows(all_results, .id = "season")
+
+# remove missing dates
+all_results = all_results[all_results$Date != "",]
+
+all_results$alwaysfav = apply(all_results, 1, get_result, bet = 5)
+
+# all_results %>% 
+#   select(season, FTHG, FTAG, B365H, B365A, alwaysfav) %>% 
+#   group_by(season) %>% 
+#   mutate(cumsum_season = cumsum(alwaysfav)) %>% 
+#   View()
+
+cumsum_year = all_results %>% 
+  group_by(season, day_ofseason) %>% 
+  mutate(daily_total = sum(alwaysfav)) %>% 
+  group_by(season) %>% 
+  mutate(yearly_cumsum = cumsum(alwaysfav))
+
+ggplot(cumsum_year, aes(x = day_ofseason, y = yearly_cumsum, col = season)) + 
+  geom_line() + 
+  ggtitle("EPL Season from 2012 - 2023", "$5 on every favourite") + 
+  xlab("Days of the season") +
+  ylab("Cumulative Total ($)")
+
+
+
+```
+
+```{r}
+
+all_results$fav_wins = all_results$FTHG > all_results$FTAG & all_results$B365H <= all_results$B365A |
+  all_results$FTAG > all_results$FTHG & all_results$B365A <= all_results$B365H
+
+## These should match but they don't 
+sum(all_results$fav_wins)
+sum(all_results$alwaysfav >= 0)
+
+ww = all_results %>% filter(fav_wins)
+which(!(ww$fav_wins & ww$alwaysfav >= 0))
+
+summary(all_results$alwaysfav[all_results$fav_wins] / 5)
+
+
+```
+
