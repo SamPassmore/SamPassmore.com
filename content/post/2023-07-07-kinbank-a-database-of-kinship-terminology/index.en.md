@@ -33,3 +33,5 @@ ANU Reporter: [What’s in a name? Why the words we use for family members tell 
 Museu Emílio Goeldi: [Twitter thread](https://twitter.com/museugoeldi/status/1663669881470869504?t=UiQARtm3ZghRKYWuYz3ObA&s=19)
 
 Reddit discussion: [Linguistics](https://www.reddit.com/r/linguistics/comments/13rc9mr/crosslinguistic_study_of_3000_parental_kinterms/)
+
+Podcast "Beacause Language": [around 30 minute mark](https://becauselanguage.com/83-youre-all-talk/)
