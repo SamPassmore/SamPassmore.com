@@ -17,6 +17,8 @@ I wondered how well bookies deal with simple season-long strategies. For example
 
 Fortunately, this data is readily available and I did not have to risk anything to answer my curiosity. 
 
+All data was downloaded from: [football-data.co.uk](https://www.football-data.co.uk/englandm.php)
+
 ```{r}
 suppressPackageStartupMessages({
   library(stringr)
@@ -26,10 +28,16 @@ suppressPackageStartupMessages({
   library(knitr)
   library(tidyr)
   library(RColorBrewer)
+  library(kableExtra)
 })
+
+# Set up defaults for R code
+knitr::opts_chunk$set(warning = FALSE, message = FALSE, fig.align = 'center') 
+
 
 results = read.csv("2223_EPL.csv")
 
+# Function for calculating favourite
 get_result = function(r, bet = 5){
   # using sapply retains names
   odds = sapply(r[c("B365H", "B365A")], as.numeric)
@@ -38,8 +46,6 @@ get_result = function(r, bet = 5){
   # If odds are equal, this will favour the home team  
   fav = str_extract(names(odds)[which.min(odds)], "[HA]")
   win = r["FTR"]
-  # win = str_extract(names(score)[which.max(score)], "[HA]")
-  
   
   if(fav == win & fav == "H"){
     returning_bet = (odds["B365H"] * bet) - bet
@@ -53,29 +59,45 @@ get_result = function(r, bet = 5){
   returning_bet
 }
 
+# Calculate results for every match
 results$alwaysfav = apply(results, 1, get_result)
-results$alwaysfav_cumsum = cumsum(results$alwaysfav)
 
-ggplot(results, aes(x = dmy(Date), y = alwaysfav_cumsum)) + 
+# Give each matchday a unique identifier
+results$day_ofseason = match(results$Date, unique(results$Date))
+
+# Calculate the total for each matchday 
+cumsum_year = results %>% 
+  group_by(day_ofseason) %>% 
+  mutate(daily_total = sum(alwaysfav)) %>%
+  ungroup() %>% 
+  mutate(daily_cumsum = cumsum(daily_total)) %>% 
+  select(Date, day_ofseason, daily_total, daily_cumsum)
+
+# Plot the total for each matchday over the year
+ggplot(cumsum_year, aes(x = day_ofseason, y = daily_cumsum)) + 
   geom_line() + 
-  ggtitle("EPL 22/23 Season", "$5 on every favourite")
+  geom_hline(yintercept = 0, col = "red", lty = "dashed") + 
+  ggtitle("EPL 22/23 Season", "$5 on every favourite") + 
+  xlab("Days of the season") +
+  ylab("Cumulative Total ($)")
 
 ```
 
 ## Last 10 seasons
 
 Is this a one season wonder or, is this a regular pattern in the premier league? 
+
 ```{r}
 
 csv_files = list.files(path = ".", "*.csv")
 all_results = lapply(csv_files, read.csv)
 names(all_results) = str_extract(csv_files, "[0-9]+")
+
 all_results = lapply(all_results, function(x){
-  season_dates = unique(x$Date)
-  seaons_days = data.frame(Date = season_dates, day_ofseason = 1:length(season_dates))
-  x = left_join(x, seaons_days, "Date")
+  x$day_ofseason = match(x$Date, unique(x$Date))
   x
 })
+
 all_results = bind_rows(all_results, .id = "season")
 
 # make season labels pretty
@@ -85,12 +107,6 @@ all_results$season = gsub("(\\d{2})(\\d{2})$","\\1-\\2", all_results$season)
 all_results = all_results[all_results$Date != "",]
 
 all_results$alwaysfav = apply(all_results, 1, get_result, bet = 5)
-
-# all_results %>% 
-#   select(season, FTHG, FTAG, B365H, B365A, alwaysfav) %>% 
-#   group_by(season) %>% 
-#   mutate(cumsum_season = cumsum(alwaysfav)) %>% 
-#   View()
 
 cumsum_year = all_results %>% 
   group_by(season, day_ofseason) %>% 
@@ -107,10 +123,13 @@ ggplot(cumsum_year, aes(x = day_ofseason, y = yearly_cumsum, col = season)) +
 ```
 
 ```{r}
+# Make a table of results
 aggregate(cumsum_year$yearly_cumsum, by=list(cumsum_year$season), FUN=last) %>% 
-  kable(., col.names = c("Season", "Final Total"))
+  kable(., col.names = c("Season", "Final Total"), format = "html") %>%
+  kable_styling(full_width = F) 
 ```
-So, it seems a simple strategy of always bet the favourite isn't always a terrible idea. In four of the 11 seasons looked at, this strategy would give you a net gain (36%). Not really good enough odds to rely on though. 
+
+A simple strategy of always bet the favourite isn't always a terrible idea. In four of the 11 seasons looked at, this strategy would give you a net gain (36%). Not really good enough odds to rely on though. 
 
 If you had used this strategy across these seasons, you'd be $412.2 out of pocket. Which is a lot of time used to lose 400 big ones. 
 
@@ -130,13 +149,13 @@ This idea extends to a three way bet, but the odds are obviously split three-way
 
 ```{r}
 ## Distribution of total probability for EPL
-
 total_probabilty = 1 / results$B365H + 1 / results$B365D + 1 / 1 / results$B365A
 
 hist(total_probabilty)
 
 ```
-Why do I care about the profit margin? well, partly it is just interesting, and partly because it leads me into my next simple betting technique - betting on all matches over some probability 
+
+Why do I care about the profit margin? well, partly it is just interesting, and partly because it leads me into my next simple betting technique - betting on all matches over some probability.
 
 ## Probability-biased betting
 
@@ -145,7 +164,7 @@ What happens if I only bet on matches where the favourite is has a probability o
 I will look at three probabilities, 65%, 80%, and 90%, and recycle and adjust the get_result function from above. 
 
 ```{r}
-
+# Re-work the results calculator to allow for thresholds
 get_result_threshold = function(r, bet = 5, threshold = 0.65){
   # using sapply retains names
   odds = sapply(r[c("B365H", "B365A")], as.numeric)
@@ -172,7 +191,8 @@ get_result_threshold = function(r, bet = 5, threshold = 0.65){
   if(fav != win) {
     returning_bet = -5
   }
-  if(prob <= threshold){ # if the favourite isn't above the probability threshold, dont bet
+  # if the favourite isn't above the probability threshold, dont bet. 
+  if(prob <= threshold){ 
     returning_bet = 0
   }
   returning_bet
@@ -189,10 +209,6 @@ all_results$alwaysfav_cumsum_0.80 = cumsum(all_results$alwaysfav_thresh0.80)
 all_results$alwaysfav_cumsum_0.90 = cumsum(all_results$alwaysfav_thresh0.90)
 
 threshold_results = all_results %>% 
-  # group_by(season, day_ofseason) %>% 
-  # mutate(daily_total.65 = sum(alwaysfav_thresh0.65),
-  #        daily_total.80 = sum(alwaysfav_thresh0.80),
-  #        daily_total.90 = sum(alwaysfav_thresh0.90)) %>% 
   group_by(season) %>% 
   mutate(yearly_cumsum.65 = cumsum(alwaysfav_thresh0.65),
          yearly_cumsum.80 = cumsum(alwaysfav_thresh0.80),
@@ -209,6 +225,11 @@ ggplot(threshold_results, aes(x = day_ofseason, y = value, group = name, col = n
   facet_wrap(~season)
 
 ```
+
+
+Ok. It looks like this is not a quick way to get rich. Game-by-bame gambling odds seems to look after the long-term odds in these cases. Although in the odd season simple strategies work, in general it would be a loosing strategy. 
+
+[When the Fun Stops, Stop.](https://www.dss.gov.au/communities-and-vulnerable-people-programs-services-gambling/gambling-support)
 
 
 ## Tests
