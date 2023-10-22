@@ -19,6 +19,17 @@ Fortunately, this data is readily available and I did not have to risk anything 
 
 All data was downloaded from: [football-data.co.uk](https://www.football-data.co.uk/englandm.php)
 
+To calculate whether betting on favorites will make money takes three steps:
+
+1. Figure out who is the favourite (from the odds)
+2. Figure out who won (from the score)
+3. Determine if that is the same team
+
+If it is the same team, then I win! If they are not, then i lose :( 
+
+I calculate this for every game of the season, calculate how much I would win or lose per match day, then calculate that over the entire season. 
+
+
 ```{r}
 suppressPackageStartupMessages({
   library(stringr)
@@ -82,6 +93,11 @@ ggplot(cumsum_year, aes(x = day_ofseason, y = daily_cumsum)) +
   ylab("Cumulative Total ($)")
 
 ```
+
+
+For the most recent season, betting on the favourite is a terrible strategy and would see you lose the season with around -\$200 if you are betting \$5 per game. That is not a good result. 
+
+But has this strategy ever worked? 
 
 ## Last 10 seasons
 
