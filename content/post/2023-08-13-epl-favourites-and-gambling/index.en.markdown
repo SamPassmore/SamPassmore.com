@@ -13,7 +13,7 @@ DisableComments: no
 <script src="{{< blogdown/postref >}}index.en_files/kePrint/kePrint.js"></script>
 <link href="{{< blogdown/postref >}}index.en_files/lightable/lightable.css" rel="stylesheet" />
 
-I watch alot of football, and I think about statistics a fair bit too.  
+I watch a lot of football, and I think about statistics a fair bit too.  
 
 I wondered how well bookies deal with simple season-long strategies. For example, if I bet $5 on the betting favourite for the whole season, would I make any money?  
 
@@ -219,7 +219,7 @@ So, lets consider a match of tennis, either player A wins or player B wins. Unli
 
 If we have no idea who is going to win, we might give both players $2 odds, the inverse of which is 0.5 or a 50-50 chance of either player winning. 
 
-Of course, if we ran our bookies this way, our profit would be entirely dependent on the publics bettin gpatterns, and we would go broke very quickly. So most bookies will offer odds that add up to greater than 100%, to ensure we have some more-or-less guaranteed profit. In two-way bets, like our tennis example, it would be common to see bets of 1.90 for each outcome. 
+Of course, if we ran our bookies this way, our profit would be entirely dependent on the public's betting patterns, and we would go broke very quickly. So most bookies will offer odds that add up to greater than 100%, to ensure we have some more-or-less guaranteed profit. In two-way bets, like our tennis example, it would be common to see bets of 1.90 for each outcome. 
 
 In this example: 1 / 1.90 = 0.526. so the probability of both outcomes adds up to a probability of greater than 1. As the odds are balanced on either side of the bet, then the bookies stand to gain around 5% profit of the total amount bet. 
 
@@ -272,7 +272,7 @@ get_result_threshold = function(r, bet = 5, threshold = 0.65){
   if(fav != win) {
     returning_bet = -5
   }
-  # if the favourite isn't above the probability threshold, dont bet. 
+  # if the favourite isn't above the probability threshold, don't bet. 
   if(prob <= threshold){ 
     returning_bet = 0
   }
@@ -309,7 +309,7 @@ ggplot(threshold_results, aes(x = day_ofseason, y = value, group = name, col = n
 <img src="{{< blogdown/postref >}}index.en_files/figure-html/unnamed-chunk-5-1.png" width="672" style="display: block; margin: auto;" />
 
 
-Ok. It looks like this is not a quick way to get rich. Game-by-bame gambling odds seems to look after the long-term odds in these cases. Although in the odd season simple strategies work, in general it would be a losing strategy. 
+Ok. It looks like this is not a quick way to get rich. Game-by-game gambling odds seems to look after the long-term odds in these cases. Although in the odd season simple strategies work, in general it would be a losing strategy. 
 
 [When the Fun Stops, Stop.](https://www.dss.gov.au/communities-and-vulnerable-people-programs-services-gambling/gambling-support)
 
