@@ -309,7 +309,7 @@ ggplot(threshold_results, aes(x = day_ofseason, y = value, group = name, col = n
 <img src="{{< blogdown/postref >}}index.en_files/figure-html/unnamed-chunk-5-1.png" width="672" style="display: block; margin: auto;" />
 
 
-Ok. It looks like this is not a quick way to get rich. Game-by-bame gambling odds seems to look after the long-term odds in these cases. Although in the odd season simple strategies work, in general it would be a loosing strategy. 
+Ok. It looks like this is not a quick way to get rich. Game-by-bame gambling odds seems to look after the long-term odds in these cases. Although in the odd season simple strategies work, in general it would be a losing strategy. 
 
 [When the Fun Stops, Stop.](https://www.dss.gov.au/communities-and-vulnerable-people-programs-services-gambling/gambling-support)
 
