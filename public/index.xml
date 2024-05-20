@@ -6,8 +6,25 @@
     <description>Recent content on Dr Sam Passmore</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-<<<<<<< HEAD
-    <lastBuildDate>Wed, 27 Sep 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://www.sampassmore.com/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 20 May 2024 00:00:00 +0000</lastBuildDate><atom:link href="https://www.sampassmore.com/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Global musical diversity is largely independent of linguistic and genetic histories</title>
+      <link>https://www.sampassmore.com/post/2024-05-20-musical-history/</link>
+      <pubDate>Mon, 20 May 2024 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.sampassmore.com/post/2024-05-20-musical-history/</guid>
+      <description>I lead a new paper published at Nature Communications titled &amp;ldquo;Global musical diversity is largely independent of linguistic and genetic histories&amp;rdquo;.</description>
+    </item>
+    
+    <item>
+      <title>Understanding Ordinal models</title>
+      <link>https://www.sampassmore.com/post/2023-11-09-understanding-ordinal-models/</link>
+      <pubDate>Thu, 09 Nov 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.sampassmore.com/post/2023-11-09-understanding-ordinal-models/</guid>
+      <description>In my role at ANU and within ECDI I have started a weekly drop-in session for quantitative and computer programming questions.</description>
+    </item>
+    
     <item>
       <title>Journal Impact Factor &amp; Google Scholar</title>
       <link>https://www.sampassmore.com/post/2023-09-27-journal-impact-factor-google-scholar/</link>
@@ -18,22 +35,21 @@
     </item>
     
     <item>
+      <title>EPL, Favourites, and Gambling</title>
+      <link>https://www.sampassmore.com/post/2023-08-13-epl-favourites-and-gambling/</link>
+      <pubDate>Sun, 13 Aug 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.sampassmore.com/post/2023-08-13-epl-favourites-and-gambling/</guid>
+      <description>I watch a lot of football, and I think about statistics a fair bit too.</description>
+    </item>
+    
+    <item>
       <title>Talks in Shandong and Korea</title>
       <link>https://www.sampassmore.com/post/2023-08-21-talks-in-shandong-and-korea/</link>
       <pubDate>Mon, 10 Jul 2023 00:00:00 +0000</pubDate>
       
       <guid>https://www.sampassmore.com/post/2023-08-21-talks-in-shandong-and-korea/</guid>
       <description>I recently gave two talks in Shandong, China and in Seoul, Korea (via Zoom).</description>
-=======
-    <lastBuildDate>Sun, 13 Aug 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://www.sampassmore.com/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>EPL, Favourites, and Gambling</title>
-      <link>https://www.sampassmore.com/post/2023-08-13-epl-favourites-and-gambling/</link>
-      <pubDate>Sun, 13 Aug 2023 00:00:00 +0000</pubDate>
-      
-      <guid>https://www.sampassmore.com/post/2023-08-13-epl-favourites-and-gambling/</guid>
-      <description>I watch alot of football, and I think about statistics a fair bit too.</description>
->>>>>>> epl
     </item>
     
     <item>
