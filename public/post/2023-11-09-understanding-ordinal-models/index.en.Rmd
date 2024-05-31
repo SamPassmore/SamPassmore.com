@@ -12,7 +12,9 @@ DisableComments: no
 slug: []
 ---
 
-In my role at ANU and within ECDI I have started a weekly drop-in session for quantitative and computer programming questions. [If you are a student or staff member at ANU, you can check it out here](https://anu365.sharepoint.com/sites/ModelBehaviorworkinggroup/SitePages/Coding-and-Statistics-Clinic.aspx). One of the early question I received was about running ordinal models to detect differences between two intersecting groups of individuals. I don't have that much experience in running ordinal models so here I am working through the problem!
+In my role at ANU and within ECDI I have started a weekly drop-in session for quantitative and computer programming questions. [If you are a student or staff member at ANU, you can check it out here](https://anu365.sharepoint.com/sites/ModelBehaviorworkinggroup/SitePages/Coding-and-Statistics-Clinic.aspx). 
+
+I received an enquiry from [Caroline Hendy](https://au.linkedin.com/in/caroline-hendy), for a project she is running with [Emma Breslow](https://www.emmabreslow.com/), about running ordinal models to detect differences between two intersecting groups of individuals. I don't have that much experience in running ordinal models so here I am working through the problem!
 
 ## Data
 
