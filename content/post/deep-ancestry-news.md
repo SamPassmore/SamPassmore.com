@@ -7,7 +7,7 @@ tags:
 title: Sookias, Passmore, and Atkinson (2018) - News coverage
 ---
 
-A paper I published with Roland Sookias and Quentin Atkinson was covered in the news! Perhaps not the papers I would have chosen, but exciting to see reports on your work in any case. There was coverage by [the Sun](), [the New York Post](https://nypost.com/2018/04/11/science-proves-communism-makes-nations-poorer-and-less-healthy/), and in the Times (see picture at the end of the post). 
+A paper I published with Roland Sookias and Quentin Atkinson was covered in the news! Perhaps not the papers I would have chosen, but exciting to see reports on your work in any case. There was coverage by [the Times](https://www.thetimes.com/uk/science/article/how-communism-can-leave-health-and-wealth-in-the-red-for-decades-qjhrb7zql) and [the New York Post](https://nypost.com/2018/04/11/science-proves-communism-makes-nations-poorer-and-less-healthy/).
 
 They didn't really focus on the right aspects of the paper, which was unfortunate. We wrote this letter in response to the news coverage, but I do not think it was published anywhere except here. 
 
