@@ -23,7 +23,8 @@ In this post I keep track of Journals I have reviewed for, and how often. I've s
 | Evolutionary Human Science                    | 2                   |
 | Religion, Brain, and Behaviour                | 1                   |
 | Frontiers Psychology                          | 2                   |
-| Humanities and Social Sciences Communications | 2                   |
+| Humanities and Social Sciences Communications | 1                   |
+| Open Mind                                     | 1                   |
 | CogSci (Conference)                           | 1                   |
 | Lingua                                        | 1                   |
 | Oxford Handbooks                              | 1                   |
